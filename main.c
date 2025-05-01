@@ -12,7 +12,7 @@ int ntheta = 128;
 int nphi = 256;
 int nt = 1000;
 int dt = 1 / 100 * 3.15e7;   // 100 time steps per yr
-char bprof = 1;
+char bprof = 0;
 char rartype = 0;
 int nrar = 0;
 method_t update = ftcs;
@@ -24,7 +24,7 @@ char *fname = "bfld.dat";
 int main(int argc, char **argv) {
 
     int t;
-    double **grid, *flow, *grad, *difr;
+    double **grid, **newgrid, **tempgrid, *flow, *grad, *difr;
     FILE *f;
     method_t update;
 //    args a;
@@ -34,6 +34,8 @@ int main(int argc, char **argv) {
 
     // Initialize grid
     grid = init_grid(ntheta, nphi, bprof);
+    newgrid = init_grid(ntheta, nphi, bprof);
+
 
     // pre-calculate motion of charges on surface - steady, axisymmetric flow.
     flow = calc_flow(ntheta);
@@ -61,7 +63,9 @@ int main(int argc, char **argv) {
         }
         */
 
-        grid = update(grid, flow, grad, difr, ntheta, nphi, dt);
+        tempgrid = update(grid, newgrid, flow, grad, difr, ntheta, nphi, dt);
+        newgrid = grid;
+        grid = tempgrid;
 
     }
 

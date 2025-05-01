@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include <stdio.h>
+
 #include "field.h"
 
 /**
@@ -13,13 +15,14 @@ double **init_grid(int ntheta, int nphi, char bprof) {
     double **grid;
     initb_t init_field;
 
-    grid = (double **) malloc(ntheta * nphi * sizeof(double));
+    grid = (double **) malloc(ntheta * sizeof(double *));
     init_field = init_fields[(int) bprof];
 
     for ( i = 0 ; i < ntheta ; i++ ) {
-        th = M_PI * (2 * i - 1) / 2 / (ntheta - 2);
+        grid[i] = (double *) malloc(nphi * sizeof(double));
+        th = M_PI * (i - 0.5) / (ntheta - 2);
         for ( j = 0 ; j < nphi ; j++ ) {
-            ph = 2 * M_PI * i / (nphi - 1);
+            ph = 2 * M_PI * j / (nphi - 1);
             grid[i][j] = init_field(th, ph);
         }
     }

@@ -81,3 +81,4 @@ double *calc_flow_grad(int ntheta) {
     return grad;
 
 }
+
