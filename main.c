@@ -10,13 +10,13 @@
 /* GLOBAL VARIABLES */
 int ntheta = 128;
 int nphi = 256;
-int nt = 1000;
+int nt = 10;
 int dt = 1 / 100 * 3.15e7;   // 100 time steps per yr
 char bprof = 0;
 char rartype = 0;
 int nrar = 0;
 method_t update = ftcs;
-int freq = 50;
+int freq = 1;
 
 char *fname = "bfld.dat";
 
