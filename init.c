@@ -9,12 +9,12 @@
 double **init_grid(int ntheta, int nphi, char bprof) {
     
     int i, j;
-    double th, ph
+    double th, ph;
     double **grid;
-    double(**init_field)(double);
+    initb_t init_field;
 
     grid = (double **) malloc(ntheta * nphi * sizeof(double));
-    init_field = init_fields[bprof];
+    init_field = init_fields[(int) bprof];
 
     for ( i = 0 ; i < ntheta ; i++ ) {
         th = M_PI * (2 * i - 1) / 2 / (ntheta - 2);

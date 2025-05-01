@@ -1,6 +1,12 @@
-double *init_field_1(double *theta);
-double *init_field_2(double *theta);
-double **ftcs(double **grid, double *theta, double *phi);
+typedef double (*initb_t)(double, double);
+
+double init_field_1(double th, double ph);
+double init_field_2(double th, double ph);
+
+initb_t init_fields[] = {
+    init_field_1,
+    init_field_2
+};
 
 const double field_b0 = 8.5;    // field strength (G)
 const double field_eta = 350 * 10^6;    // diffusivity (m^2/s)

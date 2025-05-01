@@ -1,4 +1,15 @@
+#include <stdio.h>
 
+void store(double **grid, FILE *f, int ntheta, int nphi) {
+    int i, j;
+    for ( i = 0 ; i < ntheta ; i++ ) {
+        for ( j = 0 ; j < nphi ; j++ ) {
+            fprintf(f, "%.4le,", grid[i][j]);
+        }
+    }
+    fprintf(f, "\n");
+}
+/**
 typedef struct Args {
     int ntheta;
     int nphi;
@@ -7,15 +18,6 @@ typedef struct Args {
     int nrar;
     char simtype;
 } *args;
-
-void store(double **grid, FILE *f) {
-    for ( i = 0 ; i < ntheta ; i++ ) {
-        for ( j = 0 ; j < nphi ; j++ ) {
-            fprintf(f, "%.4le,", grid[i][j]);
-        }
-    }
-    fprintf(f, "\n");
-}
 
 args parse(int argc, char **argv) {
 
@@ -39,3 +41,4 @@ args parse(int argc, char **argv) {
 
     return a;
 }
+ */

@@ -3,6 +3,7 @@
 
 #include "flow.h"
 #include "field.h"
+#include "init.h"
 #include "methods.h"
 #include "io.h"
 
@@ -10,21 +11,23 @@
 int ntheta = 128;
 int nphi = 256;
 int nt = 1000;
-int dt = 1 / 100 * 3.15e7;   # 100 time steps per yr
+int dt = 1 / 100 * 3.15e7;   // 100 time steps per yr
 char bprof = 1;
 char rartype = 0;
 int nrar = 0;
-(double **)update = ftcs;
+method_t update = ftcs;
+int freq = 50;
 
 char *fname = "bfld.dat";
 
 
 int main(int argc, char **argv) {
 
-    int t, freq;
-    double **grid;
+    int t;
+    double **grid, *flow, *grad, *difr;
     FILE *f;
-    args a;
+    method_t update;
+//    args a;
 
     // open file for saving data
     f = fopen(fname, "w");
@@ -45,7 +48,7 @@ int main(int argc, char **argv) {
         // save snapshot of solution
         if ( t % freq == 0 ) {
             printf("Storing solution for step %*d\n", 4, t);
-            store(grid, f);
+            store(grid, f, ntheta, nphi);
         }
 
         /**
@@ -58,7 +61,7 @@ int main(int argc, char **argv) {
         }
         */
 
-        grid = update(grid, flow, grad, difr, ntheta, nphi);
+        grid = update(grid, flow, grad, difr, ntheta, nphi, dt);
 
     }
 

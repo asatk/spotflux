@@ -1,7 +1,7 @@
 CFLAGS = -Wall -Werror -g -O2
 LDFLAGS = -lm
 
-main: field.c flow.c methods.c io.c main.c
+main: flow.c field.c init.c methods.c io.c main.c
 	gcc $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 clean:

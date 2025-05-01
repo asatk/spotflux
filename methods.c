@@ -7,10 +7,14 @@
 double **ftcs(double **grid, double *flow, double *grad, double *difr,
         double ntheta, double nphi, double dt) {
 
-    int i, j, k;
-    double val, term, bij, **newgrid, dth, dph;
+    int i, j;
+    double val, term, **newgrid, th, dth, ph, dph;
+    double bij, bipj, bimj, bijp, bijm;
 
-    newgrid = (double**) malloc(n_theta * n_phi * sizoef(double));
+    (void)ph;
+
+    // hows abouts you flip flop btwn two mem areas??!! no more mallocing
+    newgrid = (double**) malloc(ntheta * nphi * sizeof(double));
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
@@ -34,28 +38,28 @@ double **ftcs(double **grid, double *flow, double *grad, double *difr,
             // term 1
             term = grad[i] * bij;
             term += flow[i] * (bipj - bimj) / 2 / dth;
-            term += cot(th) * flow[i] * bij;
-            term /= -rad
+            term += cos(th) / sin(th) * flow[i] * bij;
+            term /= -rad;
             val += term;
 
             // term 2
             term = bijp - bijm;
-            term /= -diffr[i] / 2 / dphi;
+            term /= -difr[i] / 2 / dph;
             val += term;
 
             // term 3
-            term = (bipj + bimj - 2 * bij) / dphi;
-            term += cot(th) * (bipj - bimj) / 2;
-            term *= field_eta / rad^2 / dphi;
+            term = (bipj + bimj - 2 * bij) / dph;
+            term += cos(th) / sin(th) * (bipj - bimj) / 2;
+            term *= field_eta / pow(rad,2) / dph;
             val += term;
 
             // term 4
             term = bijp + bijm - 2 * bij;
-            term *= field_eta / (rad * sin(th) * dphi)^2;
+            term *= field_eta / pow(rad * sin(th) * dph,2);
             val += term;
 
             // term 5
-            val += -bij / tau;
+            val += -bij / field_tau;
             
             // term 6 - active regions
             val += 0.0;

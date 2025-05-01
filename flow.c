@@ -9,19 +9,19 @@
 double *calc_flow(int ntheta) {
     
     int i;
-    double cos_th, sin_th, val, *flow;
+    double th, dth, cos_th, sin_th, val, *flow;
 
     flow = (double *) malloc(ntheta * sizeof(double));
 
     dth = M_PI / (ntheta - 2);
 
-    for ( i = 0 ; i < n_theta ; i++ ) {
+    for ( i = 0 ; i < ntheta ; i++ ) {
         th = (i - 0.5) * dth;
         cos_th = cos(th);
         sin_th = sin(th);
 
-        val = erf(flow_v * sin_th) ^ flow_q;
-        val += erf(flow_w * cos_th) ^ flow_n;
+        val = pow(erf(flow_v * sin_th), flow_q);
+        val += pow(erf(flow_w * cos_th), flow_n);
         val *= -flow_u0;
 
         flow[i] = val;
@@ -37,7 +37,7 @@ double *calc_flow(int ntheta) {
 double *calc_difr(int ntheta) {
     
     int i;
-    double cos_th, val, *difr;
+    double th, dth, cos_th, val, *difr;
 
     difr = (double *) malloc(ntheta * sizeof(double));
 
@@ -46,8 +46,11 @@ double *calc_difr(int ntheta) {
     for ( i = 0 ; i < ntheta ; i++ ) {
         th = (i - 0.5) * dth;
         cos_th = cos(th);
-        difr[i] = 1 + diffr_a2 * cos_th ^ 2 + diffr_a4 * cos_th ^ 2;
-        difr[i] *= difr0;
+
+        val = 1 + difr_a2 * pow(cos_th,2) + difr_a4 * pow(cos_th,4);
+        val *= difr0;
+
+        difr[i] = val;
     }
 
     return difr;
@@ -57,19 +60,21 @@ double *calc_difr(int ntheta) {
 double *calc_flow_grad(int ntheta) {
 
     int i;
-    double *grad, vsin, wcos, th, val;
+    double *grad, vsin, wcos, th, dth, val;
 
-    grad = flow(ntheta);
+    grad = calc_flow(ntheta);
 
     dth = M_PI / (ntheta - 2);
 
-    for ( i = 0 ; i < n_theta ; i++ ) {
+    for ( i = 0 ; i < ntheta ; i++ ) {
         th = (i - 0.5) * dth;
         vsin = flow_v * sin(th);
         wcos = flow_w * cos(th);
-        val = exp(-(vsin)^2) * flow_q * flow_v * cos(theta) / erf(vsin);
-        val -= exp(-(wcos)^2) * flow_n * flow_w * sin(theta) / erf(wcos);
+
+        val = exp(-pow(vsin,2)) * flow_q * flow_v * cos(th) / erf(vsin);
+        val -= exp(-pow(wcos,2)) * flow_n * flow_w * sin(th) / erf(wcos);
         val *= 2 / sqrt(M_PI);
+        
         grad[i] = val;
     }
 
