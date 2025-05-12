@@ -1,8 +1,8 @@
-CFLAGS = -Wall -Werror -g -O2
+CFLAGS = -Wall -Werror -g -O3
 LDFLAGS = -lm
 
-main: flow.c field.c init.c methods.c io.c main.c
+main: flow.c field.c bmr.c init.c methods.c io.c main.c
 	gcc $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 clean:
-	rm main *.o *~ core.[1-9]*
+	rm main

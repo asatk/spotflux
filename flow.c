@@ -21,7 +21,7 @@ double *calc_flow(int ntheta) {
         sin_th = sin(th);
 
         val = pow(erf(flow_v * sin_th), flow_q);
-        val += pow(erf(flow_w * cos_th), flow_n);
+        val *= pow(erf(flow_w * cos_th), flow_n);
         val *= -flow_u0;
 
         flow[i] = val;
