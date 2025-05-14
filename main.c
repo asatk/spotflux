@@ -12,7 +12,7 @@
 /* GLOBAL VARIABLES */
 int ntheta = 128;
 int nphi = 256;
-int nt = 1000001;
+int nt = 200001;
 double dt = 3.15e7 / 500000;   // 5000 time steps per yr
 char bprof = 1;
 char rartype = 0;
@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
     flow = calc_flow(ntheta);
     grad = calc_flow_grad(ntheta);
     difr = calc_difr(ntheta);
+    init_coef(flow, grad, difr, ntheta, nphi, dt);
 
     // evolve surface magnetic field over time
     for ( t = 0 ; t < nt ; t++ ) {
-
 
         // inject active region
         if ( t % bmr_step == 0 ) {
@@ -63,7 +63,8 @@ int main(int argc, char **argv) {
             store(grid, f, ntheta, nphi);
         }
 
-        tempgrid = update(grid, newgrid, flow, grad, difr, ntheta, nphi, dt);
+        update(grid, newgrid, flow, grad, difr, ntheta, nphi, dt);
+        tempgrid = newgrid;
         newgrid = grid;
         grid = tempgrid;
 

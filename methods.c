@@ -30,7 +30,7 @@ void init_coef(double *flow, double *grad, double *difr,
     coefc = dt * field_eta / pow(field_rad * dth, 2);
 
     for ( i = 0 ; i < ntheta ; i++ ) {
-        th = (i - 0.5) * dt;
+        th = (i - 0.5) * dth;
         cos_th = cos(th);
         sin_th = sin(th);
 
@@ -53,63 +53,21 @@ void init_coef(double *flow, double *grad, double *difr,
     }
 }
 
-double **ftcs(double **grid, double **newgrid, double *flow, double *grad, double *difr,
+void ftcs(double **grid, double **newgrid, double *flow, double *grad, double *difr,
         int ntheta, int nphi, double dt) {
 
     int i, j;
-    double val, term, th, dth, ph, dph;
-    double bij, bipj, bimj, bijp, bijm;
-
-    (void)ph;
-
-    dth = M_PI / (ntheta - 2);
-    dph = 2 * M_PI / (nphi - 1);
+    double val;
 
     for ( i = 1 ; i < ntheta - 1; i++ ) {
-        th = (i - 0.5) * dth;
         for ( j = 0 ; j < nphi ; j++ ) {
-            ph = j * dph;
 
-            // store these values to avoid repeated computations
-            bij = grid[i][j];
-            bipj = grid[i+1][j];
-            bimj = grid[i-1][j];
-            bijp = grid[i][(j+1)%nphi];
-            bijm = grid[i][(j-1+nphi)%nphi];
-
-            // new value of field at (theta[i], phi[j])
-            // term 0
-            val = bij / dt;
-
-            // term 1
-            term = grad[i] * bij;
-            term += flow[i] * (bipj - bimj) / 2 / dth;
-            term += cos(th) / sin(th) * flow[i] * bij;
-            term /= -field_rad;
-            val += term;
-
-            // term 2
-            term = bijp - bijm;
-            term *= -difr[i] / 2 / dph;
-            val += term;
-
-            // term 3
-            term = (bipj + bimj - 2 * bij) / dth;
-            term += cos(th) / sin(th) * (bipj - bimj) / 2;
-            term *= field_eta / pow(field_rad,2) / dth;
-            val += term;
-
-            // term 4
-            term = bijp + bijm - 2 * bij;
-            term *= field_eta / pow(field_rad * sin(th) * dph,2);
-            val += term;
-
-            // term 5
-            term = -bij / field_tau;
-            val += term;
-
-            // update new grid with new value
-            newgrid[i][j] = val * dt;
+            val = (1 + (2 * (coefa[i] - coefc - coefe[i]))) * grid[i][j];
+            val += (coefc + coefb[i]) * grid[i+1][j];
+            val += (coefc - coefb[i]) * grid[i-1][j];
+            val += (coefe[i] + coefd[i]) * grid[i][(j+1)%nphi];
+            val += (coefe[i] - coefd[i]) * grid[i][(j-1+nphi)%nphi];
+            newgrid[i][j] = val;
         }
     }
 
@@ -118,18 +76,15 @@ double **ftcs(double **grid, double **newgrid, double *flow, double *grad, doubl
         newgrid[0][j] = newgrid[1][j];
         newgrid[ntheta-1][j] = newgrid[ntheta-2][j];
     }
-
-    return newgrid;
 }
 
-double **ftcs_tri(double **grid, dobule **newgrid, double *flow, double *grad, double *difr,
+/**
+void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, double *difr,
         int ntheta, int nphi, double dt) {
 
     int i, j;
-    double val, term, th, dth, ph, dph;
-    double bij, bipj, bimj, bijp, bijm;
+    double val, th, dth, dph;
 
-    (void)ph;
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
@@ -137,6 +92,5 @@ double **ftcs_tri(double **grid, dobule **newgrid, double *flow, double *grad, d
     th = (i - 0.5) * dth;
     ph = j * dph;
 
-    return NULL;
 }
-
+ */
