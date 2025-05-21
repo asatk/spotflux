@@ -4,12 +4,12 @@ from matplotlib import pyplot as plt
 ntheta = 128
 nphi = 256
 
-nsteps = 1000000
-dt = 3.15e7 / 500000 / 86400    # days
-freq = 5000     # steps
+nsteps = 100000
+dt = 3e1 / 86400    # days
+freq = 10000     # steps
 
-field_b0 = 8.5e-4
-bmr_b0 = 10.0e-4
+field_b0 = 8.5
+bmr_b0 = 10.0
 bmr_th = np.pi / 3
 bmr_loc = bmr_th / np.pi * ntheta
 
@@ -44,11 +44,29 @@ ax2.set_xticklabels(["0", r"$\pi/2$", r"$\pi$", r"$3\pi/2$", r"$2\pi$"])
 ax2.set_yticks([0, ntheta/2, ntheta-1])
 ax2.set_yticklabels(["0", r"$\pi/2$", r"$\pi$"])
 ax2.set_ylabel(r"Colatitude $\theta$")
-ax2.set_title(f"Final Bipolar Magnetic Region ({dt * (nt - 1) * freq:.1f} d)")
+ax2.set_title(f"Final Magnetic Map ({dt * (nt - 1) * freq:.1f} d)")
 
 fig.tight_layout()
 
 plt.show()
+
+r"""
+figt, axt = plt.subplots()
+imt = axt.imshow(a[49], vmin=-field_b0, vmax=field_b0, norm="symlog")
+axt.axhline(y=bmr_loc, color="red", ls="--", lw=1.0)
+cbt = plt.colorbar(imt, shrink=0.75, orientation="horizontal", pad=0.2)
+cbt.ax.set_title("Surface Magnetic Field Strength (T)")
+cbt.ax.set_xticks([-field_b0, 0.0, field_b0])
+axt.set_xlabel(r"Azimuth $\phi$")
+axt.set_xticks([0, nphi//4, nphi/2, 3*nphi//4, nphi-1])
+axt.set_xticklabels(["0", r"$\pi/2$", r"$\pi$", r"$3\pi/2$", r"$2\pi$"])
+axt.set_yticks([0, ntheta/2, ntheta-1])
+axt.set_yticklabels(["0", r"$\pi/2$", r"$\pi$"])
+axt.set_ylabel(r"Colatitude $\theta$")
+axt.set_title(f"Frame 49")
+figt.tight_layout()
+plt.show()
+"""
 
 plt.ion()
 plt.figure(1, figsize=(6,4))
