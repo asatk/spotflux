@@ -1,4 +1,6 @@
 #include <stdio.h>
+//#include <unistd.h>
+
 
 void store(double **grid, FILE *f, int ntheta, int nphi) {
     int i, j;
@@ -21,7 +23,9 @@ typedef struct Args {
 
 args parse(int argc, char **argv) {
 
-    args a;
+
+
+   args a;
 
     a = (args) malloc(sizeof(struct Args));
 
@@ -38,7 +42,7 @@ args parse(int argc, char **argv) {
     bprof = a->bprof;
     rartype = a->rartype;
     simtype = a->simtype;
-
+    return NULL;
     return a;
 }
  */

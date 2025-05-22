@@ -5,6 +5,6 @@ void ftcs(double **grid, double **newgrid, double *flow, double *grad, double *d
 void init_coef(double *flow, double *grad, double *difr,
         double ntheta, double nphi, double dt);
 
-method_t methods[] = {
+static const method_t methods[] = {
     ftcs
 };

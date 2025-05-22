@@ -1,4 +1,4 @@
-static const double flow_u0 = 12;   // maximum meridional flow speed m/s
+static const double flow_u0 = 1200;   // maximum meridional flow speed cm/s
 static const double difr0 = 2.894e-6;   // equatorial angular velocity, rad/s
 static const double difr_a2 = -0.1264;
 static const double difr_a4 = -0.1591;

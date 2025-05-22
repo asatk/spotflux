@@ -4,6 +4,7 @@
 
 #include "flow.h"
 #include "field.h"
+#include "methods.h"
 
 char verbose = 0;
 
@@ -13,13 +14,14 @@ static double coefc;
 static double *coefd;
 static double *coefe;
 
+// TODO make all theta vecs ntheta but set end elmts to 0
 void init_coef(double *flow, double *grad, double *difr,
         double ntheta, double nphi, double dt) {
 
-    coefa = (double *) malloc(ntheta * sizeof(double));
-    coefb = (double *) malloc(ntheta * sizeof(double));
-    coefd = (double *) malloc(ntheta * sizeof(double));
-    coefe = (double *) malloc(ntheta * sizeof(double));
+    coefa = (double *) malloc((ntheta - 1) * sizeof(double));
+    coefb = (double *) malloc((ntheta - 1) * sizeof(double));
+    coefd = (double *) malloc((ntheta - 1) * sizeof(double));
+    coefe = (double *) malloc((ntheta - 1) * sizeof(double));
 
     int i;
     double val, th, dth, dph, cos_th, sin_th;
@@ -27,9 +29,13 @@ void init_coef(double *flow, double *grad, double *difr,
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
 
+    coefa[0] = 0;
+    coefb[0] = 0;
     coefc = dt * field_eta / pow(field_rad * dth, 2);
+    coefd[0] = 0;
+    coefe[0] = 0;
 
-    for ( i = 0 ; i < ntheta ; i++ ) {
+    for ( i = 1 ; i < ntheta - 1 ; i++ ) {
         th = (i - 0.5) * dth;
         cos_th = cos(th);
         sin_th = sin(th);

@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "random.h"
+#include "bmr.h"
 #include "flow.h"
 #include "field.h"
-#include "bmr.h"
 #include "init.h"
 #include "methods.h"
 #include "io.h"
@@ -12,14 +13,14 @@
 /* GLOBAL VARIABLES */
 int ntheta = 128;
 int nphi = 256;
-int nt = 200001;
-double dt = 3.15e7 / 500000;   // 5000 time steps per yr
+int nt = 100001;
+double dt = 3e1;   // 1e5 steps per year
 char bprof = 1;
-char rartype = 0;
-int nrar = 0;
 method_t update = ftcs;
-int freq = 5000;
-int bmr_step = 50000;
+emerge_t emerge = naive;
+int freq = 10000;
+unsigned long long seed = 0x2025LL;
+double activity = -1.0;
 
 char *fname = "bfld.dat";
 
@@ -27,12 +28,19 @@ char *fname = "bfld.dat";
 int main(int argc, char **argv) {
 
     int t;
-    double **grid, **newgrid, **tempgrid, *flow, *grad, *difr, dth, dph, cfl;
+    double **grid, **newgrid, **tempgrid;
+    double *flow, *grad, *difr;
+    double dth, dph, cfl, time;
+
     FILE *f;
 //    args a;
 
     // open file for saving data
     f = fopen(fname, "w");
+
+    // Initialize PRNG
+    set_seed(seed);
+    set_activity(activity);
 
     // Initialize grid
     grid = init_grid(ntheta, nphi, bprof);
@@ -50,12 +58,11 @@ int main(int argc, char **argv) {
     init_coef(flow, grad, difr, ntheta, nphi, dt);
 
     // evolve surface magnetic field over time
+    time = 0;
     for ( t = 0 ; t < nt ; t++ ) {
 
         // inject active region
-        if ( t % bmr_step == 0 ) {
-            grid = inject_bmr(grid, ntheta, nphi);
-        }
+        emerge(grid, ntheta, nphi, time, dt);
 
         // save snapshot of solution
         if ( t % freq == 0 ) {
@@ -67,6 +74,7 @@ int main(int argc, char **argv) {
         tempgrid = newgrid;
         newgrid = grid;
         grid = tempgrid;
+        time += dt;
 
     }
 
