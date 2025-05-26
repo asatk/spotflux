@@ -91,16 +91,15 @@ static double mean_flux(double **grid, int ntheta, int nphi) {
 void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     
     int i, j, k, N;
-    double n, A, dth, dph, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, sig, val;
+    double n, A, dth, dph, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, distph, sig, val, dS, omega;
     double *fluxes, *colats, *longs, *sigs;
 
     int t;
 
-
     double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
 
     dth = M_PI / (ntheta - 2);
-    dph = 2 * M_PI / (ntheta - 1);
+    dph = 2 * M_PI / (nphi - 1);
 
 //    avgflux = mean_flux(grid, ntheta, nphi);
 //    avgfield = mean_field(grid, ntheta, nphi);
@@ -124,7 +123,7 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     **/
 
     N = (int) trunc(n + u);
-    if ( N < 1.0 ) return;
+    if ( N < 1 ) return;
 
     // separation btwn spots -- 18000km = 1.8e9cm
     sep = 1.8e9 / field_rad / 2;
@@ -135,15 +134,18 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     sigs = (double *) malloc(2 * N * sizeof(double));
 
     for ( k = 0 ; k < N ; k++ ) {
+        //size = sample_size_bmr();
         size = sample_size_bmr();
-        flux = size * avgfluxd;
+        omega = size / field_rad / field_rad;   // solid angle in rad^2
+        flux = size * avgfluxd; // TODO check if flux should be divided by R^2
         hemi = sample_hemi();
         colat = sample_th(flux);
+        if ( hemi < 0.0 ) colat = M_PI - colat;
         lng = sample_ph();
         inc = sample_i(flux);
 
         // gaussian profile where FWHM is diameter of 'size'
-        sig = sqrt(size / 2 / M_PI / M_LN2);
+        sig = sqrt(omega / 2 / M_PI / M_LN2);
 
         // leading spot
         sigs[2*k] = sig;
@@ -157,21 +159,23 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
         colats[2*k+1] = colat + hemi * sep * sin(inc);
         longs[2*k+1] = lng - sep * cos(inc);
 
-        printf("size = %.3e | sig = %.3e | flux = %.3e | colat = %.3e | lng = %.3e\n",
-                size, sig, flux, colat, lng);
+        //printf("size = %.3e | sig = %.3e | flux = %.3e | colat = %.3e | lng = %.3e\n",
+        //        size, sig, flux, colat, lng);
     }
-
-    //exit(1);
 
     
     for ( i = 1 ; i < ntheta - 1 ; i++ ) {
         th = (i - 0.5) * dth;
+        dS = dth * dph * sin(th) * field_rad * field_rad;
         for ( j = 0 ; j < nphi ; j++ ) {
             ph = j * dph;
             for ( k = 0 ; k < 2 * N ; k++ ) {
-                dist = sqrt(pow(th - colats[k], 2) + pow(ph - longs[k], 2)) / sigs[k];
+                distph = 2 * M_PI * ((ph - longs[k]) / 2 / M_PI - floor((ph - longs[k]) / 2 / M_PI + 1. / 2));
+                dist = sqrt(pow(th - colats[k], 2) + pow(distph, 2)) / sigs[k];
+                // phi wraps around like triangular wave form (dropped fabs b/c
+                // squared)
                 if ( dist >= 5 ) continue;
-                val = fluxes[k] * exp(-pow(dist, 2) / 2);
+                val = fluxes[k] / dS * exp(-pow(dist, 2) / 2);
 //                printf("%.3e + %.3e\n", grid[i][j], val);
                 grid[i][j] += val;
             }
@@ -190,30 +194,64 @@ void lemerle(double **grid, int ntheta, int nphi, double time, double dt) {
     (void) dt;
 }
 
+static double bmr_freq = 3.15e7 / 52;    // 1 bmr every week
+void set_bmr_freq(double bmr_f) {
+    bmr_freq = bmr_f;
+}
+
 /**
  * Naive emergence of a single bipolar magnetic region
  */
 void naive(double **grid, int ntheta, int nphi, double time, double dt) {
-    int i, j;
-    double dist, distp, distn, val, th, ph, dth, dph;
+    int i, j, step;
+    double dist, val, th, ph, dth, dph, spot_th, spot_ph, sep;
 
-    (void) time;
     (void) ph;
+
+    step = (int) trunc(time / dt);
+    if ( step % ((int) trunc(bmr_freq / dt)) != 0 )
+        return;
+
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
+    sep = bmr_sep / field_rad;
 
     for ( i = 1 ; i < ntheta - 1 ; i++ ) {
         th = (i - 0.5) * dth;
         for ( j = 0 ; j < nphi ; j++ ) {
             ph = j * dph;
-            dist = sqrt(pow(th - bmr_th, 2) + pow(ph - bmr_ph, 2)) / bmr_sigma;
-            if ( dist >= 5 ) continue;
-            distp = sqrt(pow(th - bmrp_th, 2) + pow(ph - bmrp_ph, 2));
-            distn = sqrt(pow(th - bmrn_th, 2) + pow(ph - bmrn_ph, 2));
-            val = exp(-pow(distp / bmr_sigma, 2) / 2) - exp(-pow(distn / bmr_sigma, 2) / 2);
-            val *= bmr_b0;
+            val = 0.0;
+
+            // leading spot northern hemisphere
+            spot_th = bmr_th + sep * sin(bmr_i);
+            spot_ph = bmr_ph + sep * cos(bmr_i);
+            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            if ( dist < 5 )
+                val += bmr_b0 * exp(-pow(dist, 2) / 2);
+
+            // trailing spot northern hemisphere
+            spot_th = bmr_th - sep * sin(bmr_i);
+            spot_ph = bmr_ph - sep * cos(bmr_i);
+            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            if ( dist < 5 )
+                val -= bmr_b0 * exp(-pow(dist, 2) / 2);
+            // leading spot southern hemisphere
+            spot_th = M_PI - bmr_th - sep * sin(bmr_i);
+            spot_ph = bmr_ph + sep * cos(bmr_i);
+            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            if ( dist < 5 )
+                val -= bmr_b0 * exp(-pow(dist, 2) / 2);
+
+            // trailing spot southern hemisphere
+            spot_th = M_PI - bmr_th + sep * sin(bmr_i);
+            spot_ph = bmr_ph - sep * cos(bmr_i);
+            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            if ( dist < 5 )
+                val += bmr_b0 * exp(-pow(dist, 2) / 2);
             grid[i][j] += val;
         }
     }
 }
+
+void none(double **grid, int ntheta, int nphi, double time, double dt) {}

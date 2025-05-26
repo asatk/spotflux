@@ -6,7 +6,7 @@ void store(double **grid, FILE *f, int ntheta, int nphi) {
     int i, j;
     for ( i = 0 ; i < ntheta ; i++ ) {
         for ( j = 0 ; j < nphi ; j++ ) {
-            fprintf(f, "%.5le ", grid[i][j]);
+            fprintf(f, "%.4le ", grid[i][j]);
         }
     }
 //    fprintf(f,"\n\n");

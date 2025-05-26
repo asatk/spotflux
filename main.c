@@ -13,14 +13,16 @@
 /* GLOBAL VARIABLES */
 int ntheta = 128;
 int nphi = 256;
-int nt = 100001;
-double dt = 3e1;   // 1e5 steps per year
+int nt = 101;
+double dt = 3e1;   // 1e6 steps per year
 char bprof = 1;
 method_t update = ftcs;
-emerge_t emerge = naive;
-int freq = 10000;
+emerge_t emerge = schrijver;
+int freq = 100;
+
 unsigned long long seed = 0x2025LL;
 double activity = -1.0;
+double bmr_freq = 3.15e7 / 365; // 1 bmr every week
 
 char *fname = "bfld.dat";
 
@@ -41,6 +43,7 @@ int main(int argc, char **argv) {
     // Initialize PRNG
     set_seed(seed);
     set_activity(activity);
+    set_bmr_freq(bmr_freq);
 
     // Initialize grid
     grid = init_grid(ntheta, nphi, bprof);
