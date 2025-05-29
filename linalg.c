@@ -5,6 +5,8 @@
 
 //void init_tridiag_c(int *n);
 
+// TODO init tridiag solver for theta and tridiagcyclic solver for phi
+
 /**
  * Solves a tridiagonal system of linear equations A . x = r
  * Source: NR (Press 2007)
@@ -42,16 +44,15 @@ void tridiag(double *a, double *b, double *c, double *r, double *x, int n) {
  * tridiagonal matrix with the lower, primary, and upper diagonal values given
  * by the vectors a, b, and c. The corner elements are given by alpha in the
  * first row and beta in the first column.
+ * Assumes bottom left element ((N-1,0) aka alpha) is cN-1
+ * Assumes top right element ((0,N-1) aka beta) is a0
  */
-void tridiag_c(double *a, double *b, double *c, double *r, double *x, int n,
-        const double beta, const double alpha) {
+void tridiag_c(double *a, double *b, double *c, double *r, double *x, int n) {
     int i;
-    double factor, gamma, *bb, *u, *z;
+    double factor, alpha, beta, gamma, *bb, *u, *z;
 
-    if ( n <= 2 ) {
-        printf("tridiag_c -- n too small for cyclic tridiagonal solver");
-        exit(1);
-    }
+    alpha = c[n-1];
+    beta = a[0];
 
     bb = (double *) malloc(n * sizeof(double));
     u = (double *) malloc(n * sizeof(double));

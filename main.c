@@ -18,7 +18,7 @@ double dt = 3e1;   // 1e6 steps per year
 char bprof = 1;
 method_t update = ftcs;
 emerge_t emerge = schrijver;
-int freq = 100;
+int freq = 1;
 
 unsigned long long seed = 0x2025LL;
 double activity = -1.0;

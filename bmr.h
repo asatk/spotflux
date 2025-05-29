@@ -48,7 +48,7 @@ static const double flux_i = 8e19;
  */
 static const double bmr_b0 = 10.0;  // strength of BMR (G)
 static const double bmr_sigma = 4. / 180 * M_PI;  // spread of BMR
-static const double bmr_th = M_PI / 3;
+static const double bmr_th = th0;
 static const double bmr_ph = M_PI;
 static const double bmr_i = 4.2 / 180 * M_PI;
 static const double bmr_sep = 1.8e9 / 2;

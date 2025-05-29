@@ -13,7 +13,7 @@ freq = 100     # steps
 field_rad = 6.957e10
 field_b0 = 8.5
 bmr_b0 = 10.0
-bmr_th = np.pi / 3
+bmr_th = (90 - 17.5) / 180 * np.pi
 bmr_loc = bmr_th / np.pi * ntheta
 
 fname = "bfld.dat"
@@ -35,12 +35,6 @@ nframes = a.shape[0]
 ms = 100
 
 a_longavg = ma.array(np.mean(a, axis=2))
-
-phi_grid, theta_grid = np.meshgrid(phi, np.ravel(theta))
-fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
-ax.plot_surface(phi_grid, theta_grid, a[0])
-plt.show()
-
 
 fig, ((ax1, ax1l), (ax2, ax2l)) = \
         plt.subplots(ncols=2, nrows=2, figsize=(8, 8), layout="constrained")
