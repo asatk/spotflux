@@ -7,7 +7,7 @@ ntheta = 128
 nphi = 256
 
 nt = 10001
-dt = 3e1 / 86400    # days
+dt = 3e3 / 86400    # days
 freq = 100     # steps
 
 field_rad = 6.957e10
@@ -80,12 +80,15 @@ ax1l.set_yticks([0, ntheta/2, ntheta-1])
 ax1l.set_yticklabels(["0", r"$\pi/2$", r"$\pi$"])
 ax1l.set_title("Longitudinally-Averaged\nSurface Field over Time")
 
-ax2l.plot(np.ravel(theta), a_longavg[-1], color="C1", alpha=0.75)
-ax2l.plot(np.ravel(theta), a_longavg[0], ls="--", color="C0")
+ax2l.plot(np.ravel(theta), a_longavg[-1], color="C1", alpha=0.75, label="init")
+ax2l.plot(np.ravel(theta), a_longavg[0], ls="--", color="C0", label="final")
 ax2l.set_xlim(xmin=0, xmax=np.pi)
 ax2l.set_xlabel(r"Colatitude $\theta$")
+ax2l.set_xticks([0, np.pi/2, np.pi])
+ax2l.set_xticklabels(["0", r"$\pi/2$", r"$\pi$"])
 ax2l.set_ylabel("Surface Magnetic Flux Density (G)")
 ax2l.set_title("Longitudinally-Averaged\nMagnetic Flux Density")
+ax2l.legend()
 
 plt.show()
 
@@ -134,6 +137,8 @@ linelong = axlong.plot(np.ravel(theta), a_longavg[0], color="C1", alpha=0.75)[0]
 axlong.plot(np.ravel(theta), a_longavg[0], ls="--", color="C0")[0]
 axlong.set_xlim(xmin=0, xmax=np.pi)
 axlong.set_xlabel(r"Colatitude $\theta$")
+axlong.set_xticks([0, np.pi/2, np.pi])
+axlong.set_xticklabels(["0", r"$\pi/2$", r"$\pi$"])
 axlong.set_ylabel("Surface Magnetic Flux Density (G)")
 axlong.set_title("Longitudinally-Averaged\nMagnetic Flux Density")
 
@@ -158,3 +163,4 @@ def update(t):
 ani = anim.FuncAnimation(fig=figa, func=update, frames=nframes, interval=ms)
 plt.show()
 
+ani.save(filename="ftcs-imp-schrijver.gif", writer="pillow")

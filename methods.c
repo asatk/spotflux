@@ -183,8 +183,8 @@ void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, doubl
 
     // Neumann BCs for theta
     for ( j = 0 ; j < nphi ; j++ ) {
-        grids1[0][j] = grids1[1][j];
-        grids1[ntheta-1][j] = grids1[ntheta-2][j];
+        grids1[j][0] = grids1[j][0];
+        grids1[j][ntheta-1] = grids1[j][ntheta-2];
     }
 
     // STAGE 2 -- phi
