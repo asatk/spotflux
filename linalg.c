@@ -3,9 +3,30 @@
 
 #include "linalg.h"
 
-//void init_tridiag_c(int *n);
+static int nphi;
+static int ntheta;
+static double *gam_th;
+static double *gam_ph;
+static double *bb;
+static double *u;
+static double *z;
 
-// TODO init tridiag solver for theta and tridiagcyclic solver for phi
+/**
+ * Initialize the solvers of tridiagonal systems.
+ */
+void init_solvers(int nth, int nph) {
+
+    nphi = nph;
+    ntheta = nth;
+
+    gam_th = (double *) malloc(ntheta * sizeof(double));
+    gam_ph = (double *) malloc(nphi * sizeof(double));
+
+    bb = (double *) malloc(nphi * sizeof(double));
+    u = (double *) malloc(nphi * sizeof(double));
+    z = (double *) malloc(nphi * sizeof(double));
+}
+
 
 /**
  * Solves a tridiagonal system of linear equations A . x = r
@@ -13,20 +34,22 @@
  */
 void tridiag(double *a, double *b, double *c, double *r, double *x, int n) {
     int i;
-    double beta, *gamma;
+    double beta, *gam;
 
     if ( b[0] == 0.0 ) {
         printf("tridiag -- first element on primary diagonal b[0] must be nonzero.\n");
         exit(1);
     }
+
+    gam = (n == nphi) ? gam_ph : gam_th;
     
     beta = b[0];
     x[0] = r[0] / beta;
 
     // decomposition and forward substitution
     for ( i = 1 ; i < n ; i++ ) {
-        gamma[i] = c[i-1] / beta;
-        beta = b[i] - a[i] * gamma[i];
+        gam[i] = c[i-1] / beta;
+        beta = b[i] - a[i] * gam[i];
         if (beta == 0.0) {
             printf("tridiag -- beta is zero (zero pivot)\n");
             exit(1);
@@ -36,7 +59,7 @@ void tridiag(double *a, double *b, double *c, double *r, double *x, int n) {
 
     // back-substitution
     for ( i = n - 2 ; i >= 0 ; i-- )
-        x[i] -= gamma[i+1] * x[i+1];
+        x[i] -= gam[i+1] * x[i+1];
 }
 
 /**
@@ -49,14 +72,15 @@ void tridiag(double *a, double *b, double *c, double *r, double *x, int n) {
  */
 void tridiag_c(double *a, double *b, double *c, double *r, double *x, int n) {
     int i;
-    double factor, alpha, beta, gamma, *bb, *u, *z;
+    double factor, alpha, beta, gamma;
 
     alpha = c[n-1];
     beta = a[0];
 
-    bb = (double *) malloc(n * sizeof(double));
-    u = (double *) malloc(n * sizeof(double));
-    z = (double *) malloc(n * sizeof(double));
+    if ( n <= 2 ) {
+        printf("tridiag_c -- n too small for cyclic tridiagonal solver");
+        exit(1);
+    }
 
     gamma = -b[0];
     bb[0] = b[0] - gamma;
@@ -66,7 +90,7 @@ void tridiag_c(double *a, double *b, double *c, double *r, double *x, int n) {
         bb[i] = b[i];
 
     // solve A . x = r
-    tridiag(a, bb, c, r, x);
+    tridiag(a, bb, c, r, x, n);
 
     u[0] = gamma;
     u[n-1] = alpha;
@@ -75,7 +99,7 @@ void tridiag_c(double *a, double *b, double *c, double *r, double *x, int n) {
         u[i] = 0.0;
 
     // solve A . z = u
-    tridiag(a, bb, c, u, z);
+    tridiag(a, bb, c, u, z, n);
 
     // factor from Sherman-Morrison formula v . z / (1 + v . z)
     factor = (x[0] + beta * x[n-1] / gamma) / 

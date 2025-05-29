@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "random.h"
+#include "linalg.h"
 #include "bmr.h"
 #include "flow.h"
 #include "field.h"
@@ -13,12 +14,12 @@
 /* GLOBAL VARIABLES */
 int ntheta = 128;
 int nphi = 256;
-int nt = 101;
+int nt = 10001;
 double dt = 3e1;   // 1e6 steps per year
 char bprof = 1;
 method_t update = ftcs;
-emerge_t emerge = schrijver;
-int freq = 1;
+emerge_t emerge = naive;
+int freq = 100;
 
 unsigned long long seed = 0x2025LL;
 double activity = -1.0;
@@ -45,6 +46,9 @@ int main(int argc, char **argv) {
     set_activity(activity);
     set_bmr_freq(bmr_freq);
 
+    // Initialize tridiagonal solvers
+    init_solvers(ntheta, nphi);
+
     // Initialize grid
     grid = init_grid(ntheta, nphi, bprof);
     newgrid = init_grid(ntheta, nphi, bprof);
@@ -58,7 +62,9 @@ int main(int argc, char **argv) {
     flow = calc_flow(ntheta);
     grad = calc_flow_grad(ntheta);
     difr = calc_difr(ntheta);
-    init_coef(flow, grad, difr, ntheta, nphi, dt);
+
+    if ( update == ftcs || update == ftcs_tri)
+        init_ftcs(flow, grad, difr, ntheta, nphi, dt);
 
     // evolve surface magnetic field over time
     time = 0;

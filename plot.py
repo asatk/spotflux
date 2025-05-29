@@ -6,7 +6,7 @@ import matplotlib.animation as anim
 ntheta = 128
 nphi = 256
 
-nt = 101
+nt = 10001
 dt = 3e1 / 86400    # days
 freq = 100     # steps
 
@@ -126,7 +126,7 @@ linetotal = axtotal.plot(0, fluxd[0])[0]
 
 axtotal.set_xlim(xmin=0, xmax=(nt - 1) * dt)
 axtotal.set_xlabel("Time (d)")
-axtotal.set_ylim(ymin=np.min(fluxd), ymax=np.max(fluxd))
+axtotal.set_ylim(ymin=np.nanmin(fluxd), ymax=np.nanmax(fluxd))
 axtotal.set_ylabel("Signed Flux Density (G)")
 axtotal.set_title("Total Signed Magnetic Field (G)")
 
