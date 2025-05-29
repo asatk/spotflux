@@ -20,16 +20,15 @@ char bprof = 1;
 int freq = 100;
 
 // UPDATE
-method_t update = ftcs;
-double alpha = 0.0;
+method_t update = ftcs_tri;
+double alpha = 0.5;
 
 // RANDOM
 unsigned long long seed = 0x2025LL;
 
 // BMR
 emerge_t emerge = naive;
-double activity = -1.0;
-double bmr_freq = 3.15e7 / 365; // 1 bmr every week
+const double activity = 3.15e7 / 52;
 
 char *fname = "bfld.dat";
 
@@ -49,7 +48,6 @@ int main(int argc, char **argv) {
     // Initialize PRNG
     set_seed(seed);
     set_activity(activity);
-    set_bmr_freq(bmr_freq);
 
     // Initialize tridiagonal solvers
     init_solvers(ntheta, nphi);

@@ -21,7 +21,7 @@ static double *q2;
 static double *q3;
 static double *q4;
 static double *q5;
-static double *rtheta;
+static double *rt;
 
 // STAGE 2 tridiag system
 static double **asub;
@@ -32,7 +32,7 @@ static double *b2;
 static double *b3;
 static double *b4;
 static double *b5;
-static double *rphi;
+static double *rp;
 
 void init_ftcs(double *flow, double *grad, double *difr,
         double ntheta, double nphi, double dt, double alpha) {
@@ -58,7 +58,7 @@ void init_ftcs(double *flow, double *grad, double *difr,
     q3 = (double *) malloc(ntheta * sizeof(double));
     q4 = (double *) malloc(ntheta * sizeof(double));
     q5 = (double *) malloc(ntheta * sizeof(double));
-    rtheta = (double *) malloc(ntheta * sizeof(double));
+    rt = (double *) malloc(ntheta * sizeof(double));
 
     // STAGE 2 INITIALIZATION
     asub = (double **) malloc(ntheta * sizeof(double));
@@ -69,7 +69,7 @@ void init_ftcs(double *flow, double *grad, double *difr,
     b3 = (double *) malloc(nphi * sizeof(double));
     b4 = (double *) malloc(nphi * sizeof(double));
     b5 = (double *) malloc(nphi * sizeof(double));
-    rphi = (double *) malloc(nphi * sizeof(double));
+    rp = (double *) malloc(nphi * sizeof(double));
 
     for ( i = 1 ; i < ntheta - 1 ; i++ ) {
         th = (i - 0.5) * dth;
@@ -165,10 +165,6 @@ void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, doubl
         int ntheta, int nphi, double dt) {
 
     int i, j;
-    double *rt, *rp;
-
-    rt = (double *) malloc(ntheta * sizeof(double));
-    rp = (double *) malloc(nphi * sizeof(double));
 
     // STAGE 1 -- theta
     for ( j = 0 ; j < nphi ; j++ ) {
@@ -182,7 +178,13 @@ void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, doubl
 
         // just inline the whole tridiag stuff...
         // eh maybe not
-        tridiag(msub+1, mpri+1, msup+1, rt+1, grids1[j]+1, ntheta);
+        tridiag(msub+1, mpri+1, msup+1, rt+1, grids1[j]+1, ntheta-2);
+    }
+
+    // Neumann BCs for theta
+    for ( j = 0 ; j < nphi ; j++ ) {
+        grids1[0][j] = grids1[1][j];
+        grids1[ntheta-1][j] = grids1[ntheta-2][j];
     }
 
     // STAGE 2 -- phi
@@ -197,9 +199,15 @@ void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, doubl
         }
         // just inline the whole tridiag stuff...
         // eh maybe not
-        tridiag_c(asub[i]+1, apri[i]+1, asup[i]+1, rp, newgrid[i]+1, nphi);
+        tridiag_c(asub[i], apri[i], asup[i], rp, newgrid[i], nphi);
         // when we place new values into the grid, we can't use old ones right?
         // or we can at least have a separate scheme that allows but for now sep
+    }
+
+    // Neumann BCs for theta
+    for ( j = 0 ; j < nphi ; j++ ) {
+        newgrid[0][j] = newgrid[1][j];
+        newgrid[ntheta-1][j] = newgrid[ntheta-2][j];
     }
 
 }

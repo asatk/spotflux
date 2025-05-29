@@ -12,6 +12,8 @@ static char sample_hemi() {
 }
 
 static double sample_size_bmr() {
+    static const double smax = fluxmax / avgfluxd; // in cm^2
+    static const double smin = fluxmin / avgfluxd; // in cm^2
     return ranq1pwr(-p_bmr, smin, smax);
 }
 
@@ -87,6 +89,7 @@ static double mean_flux(double **grid, int ntheta, int nphi) {
 
 /**
  * Emergence of BMRs according to the prescription of Schrijver+ 01a.
+ * 'activity' param: curly A in Schrijver formulae (01a eq A1, 01b eq 1,2)
  */
 void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     
@@ -96,7 +99,9 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
 
     int t;
 
-    double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
+    static const double smax = fluxmax / avgfluxd; // in cm^2
+    static const double smin = fluxmin / avgfluxd; // in cm^2
+    static double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
@@ -176,7 +181,6 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
                 // squared)
                 if ( dist >= 5 ) continue;
                 val = fluxes[k] / dS * exp(-pow(dist, 2) / 2);
-//                printf("%.3e + %.3e\n", grid[i][j], val);
                 grid[i][j] += val;
             }
         }
@@ -194,24 +198,20 @@ void lemerle(double **grid, int ntheta, int nphi, double time, double dt) {
     (void) dt;
 }
 
-static double bmr_freq = 3.15e7 / 52;    // 1 bmr every week
-void set_bmr_freq(double bmr_f) {
-    bmr_freq = bmr_f;
-}
-
 /**
  * Naive emergence of a single bipolar magnetic region
+ * 'activity' param: interval of time btwn spot emergence.
+ * sign of 'activity' flips inclination (anti-Hale).
  */
 void naive(double **grid, int ntheta, int nphi, double time, double dt) {
     int i, j, step;
-    double dist, val, th, ph, dth, dph, spot_th, spot_ph, sep;
-
-    (void) ph;
+    double dist, distph, val, th, ph, dth, dph, spot_th, spot_ph, sep;
 
     step = (int) trunc(time / dt);
+    double bmr_freq = fabs(activity);
+    int hale = (0 < activity) - (activity < 0); // activity sign
     if ( step % ((int) trunc(bmr_freq / dt)) != 0 )
         return;
-
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
@@ -226,29 +226,37 @@ void naive(double **grid, int ntheta, int nphi, double time, double dt) {
             // leading spot northern hemisphere
             spot_th = bmr_th + sep * sin(bmr_i);
             spot_ph = bmr_ph + sep * cos(bmr_i);
-            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
+            dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
-                val += bmr_b0 * exp(-pow(dist, 2) / 2);
+                val += hale * bmr_b0 * exp(-pow(dist, 2) / 2);
+
+            //printf("bmr: %.2f | spot: %.2f | sep: %.2f | bmr_i %.2f\n", bmr_th, spot_th, sep * sin(bmr_i), bmr_i);
 
             // trailing spot northern hemisphere
             spot_th = bmr_th - sep * sin(bmr_i);
             spot_ph = bmr_ph - sep * cos(bmr_i);
-            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
+            dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
-                val -= bmr_b0 * exp(-pow(dist, 2) / 2);
+                val -= hale * bmr_b0 * exp(-pow(dist, 2) / 2);
+
             // leading spot southern hemisphere
             spot_th = M_PI - bmr_th - sep * sin(bmr_i);
             spot_ph = bmr_ph + sep * cos(bmr_i);
-            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
+            dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
-                val -= bmr_b0 * exp(-pow(dist, 2) / 2);
+                val -= hale * bmr_b0 * exp(-pow(dist, 2) / 2);
 
             // trailing spot southern hemisphere
             spot_th = M_PI - bmr_th + sep * sin(bmr_i);
             spot_ph = bmr_ph - sep * cos(bmr_i);
-            dist = sqrt(pow(th - spot_th, 2) + pow(ph - spot_ph, 2)) / bmr_sigma;
+            distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
+            dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
-                val += bmr_b0 * exp(-pow(dist, 2) / 2);
+                val += hale * bmr_b0 * exp(-pow(dist, 2) / 2);
+            
             grid[i][j] += val;
         }
     }
