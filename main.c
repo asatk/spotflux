@@ -17,11 +17,17 @@ int nphi = 256;
 int nt = 10001;
 double dt = 3e1;   // 1e6 steps per year
 char bprof = 1;
-method_t update = ftcs;
-emerge_t emerge = naive;
 int freq = 100;
 
+// UPDATE
+method_t update = ftcs;
+double alpha = 0.0;
+
+// RANDOM
 unsigned long long seed = 0x2025LL;
+
+// BMR
+emerge_t emerge = naive;
 double activity = -1.0;
 double bmr_freq = 3.15e7 / 365; // 1 bmr every week
 
@@ -36,7 +42,6 @@ int main(int argc, char **argv) {
     double dth, dph, cfl, time;
 
     FILE *f;
-//    args a;
 
     // open file for saving data
     f = fopen(fname, "w");
@@ -63,8 +68,14 @@ int main(int argc, char **argv) {
     grad = calc_flow_grad(ntheta);
     difr = calc_difr(ntheta);
 
-    if ( update == ftcs || update == ftcs_tri)
-        init_ftcs(flow, grad, difr, ntheta, nphi, dt);
+    if ( alpha == 0.0 )
+        update = ftcs;
+
+    if ( update == ftcs ) {
+        alpha = 0.0;
+        init_ftcs(flow, grad, difr, ntheta, nphi, dt, alpha);
+    } else if ( update == ftcs_tri)
+        init_ftcs(flow, grad, difr, ntheta, nphi, dt, alpha);
 
     // evolve surface magnetic field over time
     time = 0;

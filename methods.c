@@ -7,7 +7,6 @@
 #include "field.h"
 #include "methods.h"
 
-double alpha = 0.5;
 char verbose = 0;
 
 // Intermediate grid -- index: phi (j), theta (i)
@@ -35,12 +34,8 @@ static double *b4;
 static double *b5;
 static double *rphi;
 
-void set_alpha(double alf) {
-    alpha = alf;
-}
-
 void init_ftcs(double *flow, double *grad, double *difr,
-        double ntheta, double nphi, double dt) {
+        double ntheta, double nphi, double dt, double alpha) {
 
     int i, j;
     double coefa, coefb, coefc, coefd, coefe, th, dth, dph, cos_th, sin_th;

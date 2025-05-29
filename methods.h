@@ -6,7 +6,7 @@ void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, doubl
         int ntheta, int nphi, double dt);
 
 void init_ftcs(double *flow, double *grad, double *difr,
-        double ntheta, double nphi, double dt);
+        double ntheta, double nphi, double dt, double alpha);
 
 static const method_t methods[] = {
     ftcs,
