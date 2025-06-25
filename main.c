@@ -15,7 +15,7 @@
 int ntheta = 128;
 int nphi = 256;
 int nt = 10001;
-double dt = 3e3;   // 1e6 steps per year
+double dt = 3e3;
 char bprof = 1;
 int freq = 100;
 
@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
     } else if ( update == ftcs_tri)
         init_ftcs(flow, grad, difr, ntheta, nphi, dt, alpha);
 
+    printf("Simulation initialized.\n");
     // evolve surface magnetic field over time
     time = 0;
     for ( t = 0 ; t < nt ; t++ ) {

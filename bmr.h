@@ -28,16 +28,16 @@ static const double fluxmax = 1.5e22;       // max BMR flux (Mx)
 static const double fluxmin = 1.2e19;       // min BMR flux (Mx)
 static const double avgfluxd = 180;         // avg flux density (field) in G
 // COLATITUDE
-static const double th0 = (90 - 25) / 180 * M_PI;
+static const double th0 = 25 / 180 * M_PI;
 static const double th1 = 4 / 180 * M_PI;
 static const double mu_th = THETA_AVG;
-static const double flux_th = 5e20;
+static const double flux_th = 5e20;         // flux normalization for colat in Mx
 
 // INCLINATION
 static const double i0 = M_PI / 2;
 static const double i1 = M_PI / 10;
 static const double mu_i = INC_AVG;
-static const double flux_i = 8e19;
+static const double flux_i = 8e19;          // flux normalization for inc in Mx
 
 
 

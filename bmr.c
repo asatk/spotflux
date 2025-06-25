@@ -97,8 +97,6 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     double n, A, dth, dph, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, distph, sig, val, dS, omega;
     double *fluxes, *colats, *longs, *sigs;
 
-    int t;
-
     static const double smax = fluxmax / avgfluxd; // in cm^2
     static const double smin = fluxmin / avgfluxd; // in cm^2
     static double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
@@ -118,25 +116,21 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     // fractional number of spots
     v = ranq1dbl();
     u = (v < (n - trunc(n))) ? 1 : 0;
-    (void)t;
-    /**
-    if ( u > 0.0 ) {
-        t = round(time/dt);
-
-        printf("[%d] v %.3f n %.3f trunc(n) %d sunspot+1\n",t, v, n, (int) trunc(n));
-    }
-    **/
-
     N = (int) trunc(n + u);
     if ( N < 1 ) return;
 
     // separation btwn spots -- 18000km = 1.8e9cm
     sep = 1.8e9 / field_rad / 2;
 
+    // perhaps init this once with the max N could possibly be?
     fluxes = (double *) malloc(2 * N * sizeof(double));
     colats = (double *) malloc(2 * N * sizeof(double));
     longs = (double *) malloc(2 * N * sizeof(double));
     sigs = (double *) malloc(2 * N * sizeof(double));
+
+    // TODO pre-initialize a bunch of spots in a grid and either sample or index
+    // them with a total count. if not sampling but just making, create new once
+    // you hit the size of the thing.
 
     for ( k = 0 ; k < N ; k++ ) {
         //size = sample_size_bmr();
