@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "constants.h"
 #include "linalg.h"
-#include "flow.h"
-#include "field.h"
 #include "methods.h"
 
 char verbose = 0;

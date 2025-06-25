@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "constants.h"
 #include "random.h"
 #include "linalg.h"
 #include "bmr.h"
@@ -14,7 +15,7 @@
 /* GLOBAL VARIABLES */
 int ntheta = 128;
 int nphi = 256;
-int nt = 10001;
+int nt = 2001;
 double dt = 3e3;
 char bprof = 1;
 int freq = 100;

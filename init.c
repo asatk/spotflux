@@ -8,15 +8,16 @@
 /**
  * Initialize 2D grid for magnetic field and apply initial condition.
  */
-double **init_grid(int ntheta, int nphi, char bprof) {
+double **init_grid(int ntheta, int nphi, int bprof) {
     
     int i, j;
     double th, ph;
     double **grid;
     initb_t init_field;
 
+    // TODO refactor to be one contiguous location in memory
     grid = (double **) malloc(ntheta * sizeof(double *));
-    init_field = init_fields[(int) bprof];
+    init_field = init_fields[bprof];
 
     for ( i = 0 ; i < ntheta ; i++ ) {
         grid[i] = (double *) malloc(nphi * sizeof(double));

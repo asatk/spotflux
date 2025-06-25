@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "random.h"
-#include "field.h"
 #include "bmr.h"
+#include "constants.h"
+#include "field.h"
+#include "random.h"
 
 // return the sign of the hemisphere for now
 static char sample_hemi() {
@@ -12,8 +13,8 @@ static char sample_hemi() {
 }
 
 static double sample_size_bmr() {
-    static const double smax = fluxmax / avgfluxd; // in cm^2
-    static const double smin = fluxmin / avgfluxd; // in cm^2
+    //static const double smax = fluxmax / avgfluxd; // in cm^2
+    //static const double smin = fluxmin / avgfluxd; // in cm^2
     return ranq1pwr(-p_bmr, smin, smax);
 }
 
@@ -44,7 +45,8 @@ static double cycle_activity(double time) {
     return A0 * beta * sin(2 * M_PI * t) * fmod(2 * t, 1) * exp(-5 * fmod(2 * t * t, 1));
 }
 
-static double activity = -A0;
+//static double activity = A0;
+static double activity = 0;
 
 void set_activity(double act) {
     activity = act;
@@ -97,12 +99,11 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
     double n, A, dth, dph, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, distph, sig, val, dS, omega;
     double *fluxes, *colats, *longs, *sigs;
 
-    static const double smax = fluxmax / avgfluxd; // in cm^2
-    static const double smin = fluxmin / avgfluxd; // in cm^2
-    static double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
+
+    double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
 
 //    avgflux = mean_flux(grid, ntheta, nphi);
 //    avgfield = mean_field(grid, ntheta, nphi);

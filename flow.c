@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "constants.h"
 #include "flow.h"
 
 /**

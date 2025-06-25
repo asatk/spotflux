@@ -6,7 +6,7 @@ import matplotlib.animation as anim
 ntheta = 128
 nphi = 256
 
-nt = 10001
+nt = 2001
 dt = 3e3 / 86400    # days
 freq = 100     # steps
 
