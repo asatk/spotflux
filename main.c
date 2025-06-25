@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "constants.h"
-#include "random.h"
-#include "linalg.h"
-#include "bmr.h"
-#include "flow.h"
-#include "field.h"
-#include "init.h"
-#include "methods.h"
-#include "io.h"
+#include "src/constants.h"
+#include "src/random.h"
+#include "src/linalg.h"
+#include "src/bmr.h"
+#include "src/flow.h"
+#include "src/field.h"
+#include "src/init.h"
+#include "src/methods.h"
+#include "src/io.h"
 
 /* GLOBAL VARIABLES */
 int ntheta = 128;
