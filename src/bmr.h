@@ -1,9 +1,9 @@
-typedef void(*emerge_t)(double **, int, int, double, double);
+typedef void(*emerge_t)(double **, double);
 
-void none(double **grid, int ntheta, int nphi, double time, double dt);
-void naive(double **grid, int ntheta, int nphi, double time, double dt);
-void lemerle(double **grid, int ntheta, int nphi, double time, double dt);
-void schrijver(double **grid, int ntheta, int nphi, double time, double dt);
+void none(double **grid, double time);
+void naive(double **grid, double time);
+void lemerle(double **grid, double time);
+void schrijver(double **grid, double time);
 void set_activity(double act);
 
 static const emerge_t emerge_modes[] = {

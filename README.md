@@ -2,18 +2,24 @@
 
 Requires gcc, make, and a (python) conda environment with numpy and matplotlib
 
-### Change Simulation Behavior (TEMPORARY)
-edit file src/constants.c
-Note: this behavior will be changed. constants.c will hold default parameter
-values and a configuration file in the top level of the directory will be used
-to tweak simulation behavior.
+### Configure Simulation
+Copy the default parameters at `src/constants.c`:
+
+```cp src/constants.c config.c```
+
+Edit this configutation file with the parameters you want changed. Documentation
+of these parameters is located at `src/constants.h`.
 
 ### Compile Simulation
-make clean
-make
+```make clean```
+```make```
+
+If not using the default simulation parameters, specify your configuration file
+using instead:
+```make CONSTS=config.c```
 
 ### Run Simulation
-./main
+```./main```
 
 ### Generate Plots
-python plot.py
+```python plot.py```

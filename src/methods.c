@@ -33,17 +33,13 @@ static double *b4;
 static double *b5;
 static double *rp;
 
-void init_ftcs(double *flow, double *grad, double *difr,
-        double ntheta, double nphi, double dt, double alpha) {
+void init_ftcs(double *flow, double *grad, double *difr) {
 
     int i, j;
-    double coefa, coefb, coefc, coefd, coefe, th, dth, dph, cos_th, sin_th;
+    double coefa, coefb, coefc, coefd, coefe, th, cos_th, sin_th;
 
     // intermediate grid going from stage 1 to stage 2
     grids1 = (double **) malloc(nphi * sizeof(double));
-
-    dth = M_PI / (ntheta - 2);
-    dph = 2 * M_PI / (nphi - 1);
 
     // second deriv theta
     coefc = dt * field_eta / pow(field_rad * dth, 2);
@@ -126,8 +122,8 @@ void init_ftcs(double *flow, double *grad, double *difr,
     }
 }
 
-void ftcs(double **grid, double **newgrid, double *flow, double *grad, double *difr,
-        int ntheta, int nphi, double dt) {
+void ftcs(double **grid, double **newgrid,
+        double *flow, double *grad, double *difr) {
 
     int i, j;
     double val, c1, c2, c3, c4, c5;
@@ -160,8 +156,8 @@ void ftcs(double **grid, double **newgrid, double *flow, double *grad, double *d
     }
 }
 
-void ftcs_tri(double **grid, double **newgrid, double *flow, double *grad, double *difr,
-        int ntheta, int nphi, double dt) {
+void ftcs_tri(double **grid, double **newgrid,
+        double *flow, double *grad, double *difr) {
 
     int i, j;
 

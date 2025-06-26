@@ -1,8 +1,17 @@
 #include <stdio.h>
+//#include <optarg.h>
 //#include <unistd.h>
 
+#include "constants.h"
 
-void store(double **grid, FILE *f, int ntheta, int nphi) {
+void parseargs(int argc, char **argv) {
+
+    
+
+}
+
+
+void store(double **grid, FILE *f) {
     int i, j;
     for ( i = 0 ; i < ntheta ; i++ ) {
         for ( j = 0 ; j < nphi ; j++ ) {

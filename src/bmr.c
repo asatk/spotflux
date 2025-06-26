@@ -90,20 +90,13 @@ static double mean_flux(double **grid, int ntheta, int nphi) {
  * Emergence of BMRs according to the prescription of Schrijver+ 01a.
  * 'activity' param: curly A in Schrijver formulae (01a eq A1, 01b eq 1,2)
  */
-void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
+void schrijver(double **grid, double time) {
     
     int i, j, k, N;
-    double n, A, dth, dph, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, distph, sig, val, dS, omega;
+    double n, A, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, distph, sig, val, dS, omega;
     double *fluxes, *colats, *longs, *sigs;
 
-
-    dth = M_PI / (ntheta - 2);
-    dph = 2 * M_PI / (nphi - 1);
-
     double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
-
-//    avgflux = mean_flux(grid, ntheta, nphi);
-//    avgfield = mean_field(grid, ntheta, nphi);
 
     // sample flux from power law
     A = ( activity < 0.0 ) ? -activity : cycle_activity(time);
@@ -182,7 +175,7 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
 /**
  * Emergence of BMRs according to the prescription of Lemerle+ 15.
  */
-void lemerle(double **grid, int ntheta, int nphi, double time, double dt) {
+void lemerle(double **grid, double time) {
     (void) grid;
     (void) ntheta;
     (void) nphi;
@@ -195,7 +188,7 @@ void lemerle(double **grid, int ntheta, int nphi, double time, double dt) {
  * 'activity' param: interval of time btwn spot emergence.
  * sign of 'activity' flips inclination (anti-Hale).
  */
-void naive(double **grid, int ntheta, int nphi, double time, double dt) {
+void naive(double **grid, double time) {
     int i, j, step;
     double dist, distph, val, th, ph, dth, dph, spot_th, spot_ph, sep;
 
@@ -254,4 +247,4 @@ void naive(double **grid, int ntheta, int nphi, double time, double dt) {
     }
 }
 
-void none(double **grid, int ntheta, int nphi, double time, double dt) {}
+void none(double **grid, double time) {}

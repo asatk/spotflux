@@ -20,9 +20,11 @@ int main(int argc, char **argv) {
     int t;
     double **grid, **newgrid, **tempgrid;
     double *flow, *grad, *difr;
-    double dth, dph, cfl, time;
+    double cfl, time;
 
     FILE *f;
+
+    parseargs(argc, argv);
 
     // open file for saving data
     f = fopen(fname, "w");
@@ -32,30 +34,28 @@ int main(int argc, char **argv) {
     set_activity(activity);
 
     // Initialize tridiagonal solvers
-    init_solvers(ntheta, nphi);
+    init_solvers();
 
     // Initialize grid
-    grid = init_grid(ntheta, nphi, bprof);
-    newgrid = init_grid(ntheta, nphi, bprof);
+    grid = init_grid(bprof);
+    newgrid = init_grid(bprof);
 
-    dth = M_PI / (ntheta - 2);
-    dph = 2 * M_PI / (nphi - 1);
     cfl = field_eta * dt * (1 / dth / dth + 1 / dph / dph);
     printf("CFL est: %.4le\n", cfl);
 
     // pre-calculate motion of charges on surface - steady, axisymmetric flow.
-    flow = calc_flow(ntheta);
-    grad = calc_flow_grad(ntheta);
-    difr = calc_difr(ntheta);
+    flow = calc_flow();
+    grad = calc_flow_grad();
+    difr = calc_difr();
 
     if ( alpha == 0.0 )
         update = ftcs;
 
     if ( update == ftcs ) {
         alpha = 0.0;
-        init_ftcs(flow, grad, difr, ntheta, nphi, dt, alpha);
+        init_ftcs(flow, grad, difr);
     } else if ( update == ftcs_tri)
-        init_ftcs(flow, grad, difr, ntheta, nphi, dt, alpha);
+        init_ftcs(flow, grad, difr);
 
     printf("Simulation initialized.\n");
     // evolve surface magnetic field over time
@@ -63,15 +63,15 @@ int main(int argc, char **argv) {
     for ( t = 0 ; t < nt ; t++ ) {
 
         // inject active region
-        emerge(grid, ntheta, nphi, time, dt);
+        emerge(grid, time);
 
         // save snapshot of solution
         if ( t % freq == 0 ) {
             printf("Storing solution for step %*d\n", 8, t);
-            store(grid, f, ntheta, nphi);
+            store(grid, f);
         }
 
-        update(grid, newgrid, flow, grad, difr, ntheta, nphi, dt);
+        update(grid, newgrid, flow, grad, difr);
         tempgrid = newgrid;
         newgrid = grid;
         grid = tempgrid;

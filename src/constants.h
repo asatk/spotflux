@@ -12,9 +12,12 @@
 
 extern const int ntheta;            // theta grid points
 extern const int nphi;              // phi grid points
-extern const int nt;                // time steps
-extern const double dt;             // size of time step (s)
+extern int nt;                      // time steps
+extern double dt;                   // size of time step (s)
 extern const int freq;              // number of frames btwn data save
+
+extern const double dth;            // theta grid spacing
+extern const double dph;            // phi grid spacing
 
 // UPDATE
 extern double alpha; // 0 = explicit, 1 = implicit, (0,1) = semi-implicit
@@ -54,8 +57,8 @@ extern const double flow_n;
 
 /** BIPOLAR MAGNETIC REGION **/
 
-//#define THETA_AVG (90 - 17.5) / 180 * M_PI
-//#define INC_AVG 4.2 / 180 * M_PI
+extern const double theta_avg;      // empirically observed mean emergence colat
+extern const double inc_avg;        // empirically observed mean inc of bmr
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
 extern double activity;             // activity set by user?

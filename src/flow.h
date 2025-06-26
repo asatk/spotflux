@@ -1,3 +1,3 @@
-double *calc_flow(int ntheta);
-double *calc_difr(int ntheta);
-double *calc_flow_grad(int ntheta);
+double *calc_flow();
+double *calc_difr();
+double *calc_flow_grad();

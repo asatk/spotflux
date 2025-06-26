@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "constants.h"
 #include "linalg.h"
 
-static int nphi;
-static int ntheta;
 static double *gam_th;
 static double *gam_ph;
 static double *bb;
@@ -14,10 +13,7 @@ static double *z;
 /**
  * Initialize the solvers of tridiagonal systems.
  */
-void init_solvers(int nth, int nph) {
-
-    nphi = nph;
-    ntheta = nth;
+void init_solvers() {
 
     gam_th = (double *) malloc(ntheta * sizeof(double));
     gam_ph = (double *) malloc(nphi * sizeof(double));

@@ -7,14 +7,12 @@
 /**
  * Meridional flow
  */
-double *calc_flow(int ntheta) {
+double *calc_flow() {
     
     int i;
-    double th, dth, cos_th, sin_th, val, *flow;
+    double th, cos_th, sin_th, val, *flow;
 
     flow = (double *) malloc(ntheta * sizeof(double));
-
-    dth = M_PI / (ntheta - 2);
 
     for ( i = 0 ; i < ntheta ; i++ ) {
         th = (i - 0.5) * dth;
@@ -35,14 +33,12 @@ double *calc_flow(int ntheta) {
 /**
  * Differential rotation
  */
-double *calc_difr(int ntheta) {
+double *calc_difr() {
     
     int i;
-    double th, dth, cos_th, val, *difr;
+    double th, cos_th, val, *difr;
 
     difr = (double *) malloc(ntheta * sizeof(double));
-
-    dth = M_PI / (ntheta - 2);
 
     for ( i = 0 ; i < ntheta ; i++ ) {
         th = (i - 0.5) * dth;
@@ -58,14 +54,12 @@ double *calc_difr(int ntheta) {
 
 }
 
-double *calc_flow_grad(int ntheta) {
+double *calc_flow_grad() {
 
     int i;
-    double *grad, vsin, wcos, th, dth, val;
+    double *grad, vsin, wcos, th, val;
 
-    grad = calc_flow(ntheta);
-
-    dth = M_PI / (ntheta - 2);
+    grad = calc_flow();
 
     for ( i = 0 ; i < ntheta ; i++ ) {
         th = (i - 0.5) * dth;

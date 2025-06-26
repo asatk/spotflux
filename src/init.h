@@ -1,1 +1,3 @@
-double **init_grid(int ntheta, int nphi, char bprof);
+double **init_grid(char bprof);
+double *init_theta();
+double *init_phi();

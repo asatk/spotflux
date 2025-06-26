@@ -3,12 +3,13 @@
 
 #include <stdio.h>
 
+#include "constants.h"
 #include "field.h"
 
 /**
  * Initialize 2D grid for magnetic field and apply initial condition.
  */
-double **init_grid(int ntheta, int nphi, int bprof) {
+double **init_grid(int bprof) {
     
     int i, j;
     double th, ph;
@@ -21,9 +22,9 @@ double **init_grid(int ntheta, int nphi, int bprof) {
 
     for ( i = 0 ; i < ntheta ; i++ ) {
         grid[i] = (double *) malloc(nphi * sizeof(double));
-        th = M_PI * (i - 0.5) / (ntheta - 2);
+        th = dth * (i - 0.5);
         for ( j = 0 ; j < nphi ; j++ ) {
-            ph = 2 * M_PI * j / (nphi - 1);
+            ph = dph * j;
             grid[i][j] = init_field(th, ph);
         }
     }
@@ -35,13 +36,12 @@ double **init_grid(int ntheta, int nphi, int bprof) {
 /**
  * Create theta axis which ranges from [-dth/2, pi + dth/2]
  */
-double *init_theta(int ntheta) {
+double *init_theta() {
 
     int i;
-    double dth, *theta;
+    double *theta;
 
     theta = (double *) malloc(ntheta * sizeof(double));
-    dth = M_PI / (ntheta - 2);
 
     for (i = 0 ; i < ntheta ; i++ ) {
         theta[i] = (i - 1/2) * dth;
@@ -54,12 +54,11 @@ double *init_theta(int ntheta) {
 /**
  * Create phi axis which ranges from [0, 2pi]
  */
-double *init_phi(int nphi) {
+double *init_phi() {
     int i;
-    double dph, *phi;
+    double *phi;
 
     phi = (double *) malloc(nphi * sizeof(double));
-    dph = 2 * M_PI / (nphi - 1);
 
     for (i = 0 ; i < nphi ; i++ ) {
         phi[i] = i * dph;
