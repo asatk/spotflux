@@ -45,9 +45,6 @@ static double cycle_activity(double time) {
     return A0 * beta * sin(2 * M_PI * t) * fmod(2 * t, 1) * exp(-5 * fmod(2 * t * t, 1));
 }
 
-//static double activity = A0;
-static double activity = 0;
-
 void set_activity(double act) {
     activity = act;
 }
@@ -149,13 +146,13 @@ void schrijver(double **grid, int ntheta, int nphi, double time, double dt) {
 
         // leading spot
         sigs[2*k] = sig;
-        fluxes[2*k] = flux * hemi;
+        fluxes[2*k] = -flux * hemi;
         colats[2*k] = colat - hemi * sep * sin(inc);
         longs[2*k] = lng + sep * cos(inc);
         
         // trailing spot
         sigs[2*k+1] = sig;
-        fluxes[2*k+1] = -flux * hemi;
+        fluxes[2*k+1] = flux * hemi;
         colats[2*k+1] = colat + hemi * sep * sin(inc);
         longs[2*k+1] = lng - sep * cos(inc);
 

@@ -12,27 +12,8 @@
 #include "src/methods.h"
 #include "src/io.h"
 
-/* GLOBAL VARIABLES */
-int ntheta = 128;
-int nphi = 256;
-int nt = 2001;
-double dt = 3e3;
-char bprof = 1;
-int freq = 100;
-
-// UPDATE
 method_t update = ftcs_tri;
-double alpha = 1.0;
-
-// RANDOM
-unsigned long long seed = 0x2025LL;
-
-// BMR
 emerge_t emerge = schrijver;
-const double activity = 3.15e7 / 52;
-
-char *fname = "bfld.dat";
-
 
 int main(int argc, char **argv) {
 

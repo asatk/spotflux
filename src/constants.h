@@ -8,12 +8,57 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/** SIMULATION **/
+
+extern const int ntheta;            // theta grid points
+extern const int nphi;              // phi grid points
+extern const int nt;                // time steps
+extern const double dt;             // size of time step (s)
+extern const int freq;              // number of frames btwn data save
+
+// UPDATE
+extern double alpha; // 0 = explicit, 1 = implicit, (0,1) = semi-implicit
+
+// RANDOM
+extern const unsigned long long seed;   // PRNG seed
+
+extern const char *fname;           // data file
+
+////////////////////////////////////////////////////////////////////////////////
+
+/** FIELD AND STAR **/
+
+// Lemerle+ 15
+extern const int bprof;             // initial surface field profile {1, 2}
+extern const double field_b0;       // field strength (G)
+extern const double field_eta;      // diffusivity (cm^2/s)
+extern const double field_tau;      // sink time (s)
+extern const double field_rad;      // stellar radius (cm)
+
+////////////////////////////////////////////////////////////////////////////////
+
+/** FLUID FLOWS **/
+
+extern const double flow_u0;        // maximum meridional flow speed cm/s
+extern const double difr0;          // equatorial angular velocity, rad/s
+extern const double difr_a2;        // difr quadratic term coef
+extern const double difr_a4;        // difr quartic term coef
+
+// Lemerle+ 15 eqn 3 profile parameters
+extern const double flow_q;
+extern const double flow_w;
+extern const double flow_v;
+extern const double flow_n;
+
+////////////////////////////////////////////////////////////////////////////////
+
 /** BIPOLAR MAGNETIC REGION **/
 
 //#define THETA_AVG (90 - 17.5) / 180 * M_PI
 //#define INC_AVG 4.2 / 180 * M_PI
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
+extern double activity;             // activity set by user?
 extern const double p_bmr;          // power law exponent for active regions
 extern const double p_eph;          // power law exponent for ephemeral regions
 extern const double A0;             // activity factor (rel. to Sun at max)
@@ -52,28 +97,4 @@ extern const double bmr_sep;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/** FIELD AND STAR **/
-
-// Lemerle+ 15
-extern const double field_b0;       // field strength (G)
-extern const double field_eta;      // diffusivity (cm^2/s)
-extern const double field_tau;      // sink time (s)
-extern const double field_rad;      // stellar radius (cm)
-
-////////////////////////////////////////////////////////////////////////////////
-
-/** FLUID FLOWS **/
-
-extern const double flow_u0;        // maximum meridional flow speed cm/s
-extern const double difr0;          // equatorial angular velocity, rad/s
-extern const double difr_a2;        // difr quadratic term coef
-extern const double difr_a4;        // difr quartic term coef
-
-// Lemerle+ 15 eqn 3 profile parameters
-extern const double flow_q;
-extern const double flow_w;
-extern const double flow_v;
-extern const double flow_n;
-
-////////////////////////////////////////////////////////////////////////////////
 #endif  // CONSTANTS_H

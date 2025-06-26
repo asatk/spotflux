@@ -7,9 +7,27 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/** SIMULATION **/
+
+const int ntheta = 128;
+const int nphi = 256;
+const int nt = 2001;
+const double dt = 3e3;
+const int freq = 20;
+const char *fname = "bfld.dat";
+
+// UPDATE
+double alpha = 1.0;
+
+// RANDOM
+const unsigned long long seed = 0x2025LL;
+
+////////////////////////////////////////////////////////////////////////////////
+
 /** FIELD AND STAR **/
 
 // Lemerle+ 15
+const int bprof = 1;
 const double field_b0 = 8.5;
 const double field_eta = 3.5e12;
 const double field_tau = 32 * 3.15e7;
@@ -38,6 +56,7 @@ const double flow_n = 1;
 #define INC_AVG 4.2 / 180 * M_PI
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
+double activity = 3.15e7 / 52;
 const double p_bmr = 1.9;
 const double p_eph = 2.9;
 const double A0 = 1.0;
@@ -52,8 +71,8 @@ const double fluxmax = 1.5e22;
 const double fluxmin = 1.2e19;
 const double avgfluxd = 180;
 // SIZE
-const double smax = fluxmax / avgfluxd; // in cm^2
-const double smin = fluxmin / avgfluxd; // in cm^2
+const double smax = fluxmax / avgfluxd;
+const double smin = fluxmin / avgfluxd;
 // COLATITUDE
 const double th0 = 25 / 180 * M_PI;
 const double th1 = 4 / 180 * M_PI;
