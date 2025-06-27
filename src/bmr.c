@@ -147,10 +147,11 @@ void schrijver(double **grid, double time) {
     // the different order that floating pt arithmetic is performed...
     for ( k = 0 ; k < 2 * N ; k++ ) {
 
-        imin = (int) ((colats[k] - sigs[k] * sin(colats[k])) / dth);
-        imax = (int) ((colats[k] + sigs[k] * sin(colats[k])) / dth);
-        jmin = (int) ((longs[k] - sigs[k]) / dph);
-        jmax = (int) ((longs[k] + sigs[k]) / dph);
+        // gaussian profile out to 5 sigma
+        imin = (int) ((colats[k] - 5 * sigs[k] * sin(colats[k])) / dth);
+        imax = (int) ((colats[k] + 5 * sigs[k] * sin(colats[k])) / dth);
+        jmin = (int) ((longs[k] - 5 * sigs[k]) / dph);
+        jmax = (int) ((longs[k] + 5 * sigs[k]) / dph);
 
         imin = MAX(1, imin);
         imax = MIN(ntheta - 1, imax);

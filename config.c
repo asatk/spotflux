@@ -58,6 +58,7 @@ const double flow_n = 1;
 
 const double theta_avg = (90 - 17.5) / 180 * M_PI;
 const double inc_avg = 4.2 / 180 * M_PI;
+const double spotsep = 1.8e9 / field_rad / 2;
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
 double activity = 3.15e7 / 52;
@@ -94,6 +95,5 @@ const double bmr_sigma = 4. / 180 * M_PI;
 const double bmr_th = theta_avg;
 const double bmr_ph = M_PI;
 const double bmr_i = inc_avg;
-const double bmr_sep = 1.8e9 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////

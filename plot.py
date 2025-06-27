@@ -6,9 +6,9 @@ import matplotlib.animation as anim
 ntheta = 128
 nphi = 256
 
-nt = 10001
+nt = 2001
 dt = 3e3 / 86400    # days
-freq = 100     # steps
+freq = 20     # steps
 
 field_rad = 6.957e10
 field_b0 = 8.5
@@ -163,4 +163,4 @@ def update(t):
 ani = anim.FuncAnimation(fig=figa, func=update, frames=nframes, interval=ms)
 plt.show()
 
-ani.save(filename="ftcs-imp-2025-06-05.gif", writer="pillow")
+ani.save(filename="frames.gif", writer="pillow")
