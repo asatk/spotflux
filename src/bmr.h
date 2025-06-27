@@ -4,7 +4,9 @@ void none(double **grid, double time);
 void naive(double **grid, double time);
 void lemerle(double **grid, double time);
 void schrijver(double **grid, double time);
+void init_schrijver(double activity);
 void set_activity(double act);
+
 
 static const emerge_t emerge_modes[] = {
     none,

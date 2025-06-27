@@ -12,9 +12,9 @@
 
 const int ntheta = 128;
 const int nphi = 256;
-int nt = 2001;
+int nt = 10001;
 double dt = 3e3;
-const int freq = 20;
+const int freq = 100;
 const char *fname = "bfld.dat";
 
 const double dth = M_PI / (ntheta - 2);
@@ -58,6 +58,7 @@ const double flow_n = 1;
 
 const double theta_avg = (90 - 17.5) / 180 * M_PI;
 const double inc_avg = 4.2 / 180 * M_PI;
+const double spotsep = 1.8e9 / field_rad / 2;
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
 double activity = 3.15e7 / 52;
@@ -94,6 +95,5 @@ const double bmr_sigma = 4. / 180 * M_PI;
 const double bmr_th = theta_avg;
 const double bmr_ph = M_PI;
 const double bmr_i = inc_avg;
-const double bmr_sep = 1.8e9 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////

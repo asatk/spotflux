@@ -40,6 +40,11 @@ int main(int argc, char **argv) {
     grid = init_grid(bprof);
     newgrid = init_grid(bprof);
 
+    // TODO separate emergence into diff submodules
+    // init spot emergence
+    if ( emerge == schrijver )
+        init_schrijver(activity);
+
     cfl = field_eta * dt * (1 / dth / dth + 1 / dph / dph);
     printf("CFL est: %.4le\n", cfl);
 

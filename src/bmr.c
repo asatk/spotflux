@@ -7,6 +7,37 @@
 #include "field.h"
 #include "random.h"
 
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+
+static double *fluxes;
+static double *colats;
+static double *longs;
+static double *sigs;
+static double rangefactor;
+static int Nmax;
+
+
+// TODO separate emergence into diff submodules
+
+void init_schrijver(double activity) {
+
+    double A;
+
+    rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
+
+    // 0.6 is larger than the max of the cycle function sin * mod * exp(mod)
+    A = ( activity < 0.0 ) ? -activity : A0 * beta * 0.6;
+    Nmax = (int) ceil(a0 * A * dt * rangefactor);
+
+    // perhaps init this once with the max N could possibly be?
+    fluxes = (double *) malloc(2 * Nmax * sizeof(double));
+    colats = (double *) malloc(2 * Nmax * sizeof(double));
+    longs = (double *) malloc(2 * Nmax * sizeof(double));
+    sigs = (double *) malloc(2 * Nmax * sizeof(double));
+
+}
+
 // return the sign of the hemisphere for now
 static char sample_hemi() {
     return 2 * (ranq1() % 2) - 1;
@@ -38,7 +69,6 @@ static double sample_i(double flux) {
     return randnorm(mu_i, sig_i);
 }
 
-// TODO: check order of ops for mod/%
 static double cycle_activity(double time) {
     double t;
     t = time / tcycle;
@@ -50,53 +80,13 @@ void set_activity(double act) {
 }
 
 /**
-static double mean_field(double **grid, int ntheta, int nphi) {
-    
-    int i, j;
-    double field;
-
-    for ( i = 1 ; i < ntheta - 1 ; i++ ) {
-        for ( j = 0 ; j < nphi ; j++ ) {
-            field = fabs(grid[i][j]);
-        }
-    }
-
-    field /= (ntheta - 2) * (nphi - 1);
-    return field;
-}
-
-static double mean_flux(double **grid, int ntheta, int nphi) {
-    
-    int i, j;
-    double dth, dph, th, dS, flux;
-
-    dth = M_PI / (ntheta - 2);
-    dph = 2 * M_PI / (ntheta - 1);
-
-    for ( i = 1 ; i < ntheta - 1 ; i++ ) {
-        th = (i - 0.5) * dth;
-        dS = dth * dph * sin(th);
-        for ( j = 0 ; j < nphi ; j++ ) {
-            flux = fabs(grid[i][j] * dS);
-        }
-    }
-
-    flux /= (ntheta - 2) * (nphi - 1);
-    return flux;
-}
-**/
-
-/**
  * Emergence of BMRs according to the prescription of Schrijver+ 01a.
  * 'activity' param: curly A in Schrijver formulae (01a eq A1, 01b eq 1,2)
  */
 void schrijver(double **grid, double time) {
     
-    int i, j, k, N;
-    double n, A, th, ph, u, v, size, flux, hemi, sep, colat, lng, inc, dist, distph, sig, val, dS, omega;
-    double *fluxes, *colats, *longs, *sigs;
-
-    double rangefactor = (pow(smax / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr) - pow(smin / field_rad / field_rad * 180 * 180 / M_PI / M_PI, 1-p_bmr)) / (1 - p_bmr);
+    int i, ipole, imin, imax, j, jwrap, jmin, jmax, k, N;
+    double n, A, th, ph, u, v, size, flux, hemi, colat, lng, inc, dist, distth, distph, sig, dS, omega;
 
     // sample flux from power law
     A = ( activity < 0.0 ) ? -activity : cycle_activity(time);
@@ -107,17 +97,13 @@ void schrijver(double **grid, double time) {
     // fractional number of spots
     v = ranq1dbl();
     u = (v < (n - trunc(n))) ? 1 : 0;
-    N = (int) trunc(n + u);
+    N = (int) trunc(n + u); // TODO trunc redundant here?
     if ( N < 1 ) return;
-
-    // separation btwn spots -- 18000km = 1.8e9cm
-    sep = 1.8e9 / field_rad / 2;
-
-    // perhaps init this once with the max N could possibly be?
-    fluxes = (double *) malloc(2 * N * sizeof(double));
-    colats = (double *) malloc(2 * N * sizeof(double));
-    longs = (double *) malloc(2 * N * sizeof(double));
-    sigs = (double *) malloc(2 * N * sizeof(double));
+    if ( N > Nmax ) {
+        printf("Number of spots N exceeds calculated maximum: %d vs. Nmax %d\n",
+                N, Nmax);
+        return;
+    }
 
     // TODO pre-initialize a bunch of spots in a grid and either sample or index
     // them with a total count. if not sampling but just making, create new once
@@ -140,20 +126,74 @@ void schrijver(double **grid, double time) {
         // leading spot
         sigs[2*k] = sig;
         fluxes[2*k] = -flux * hemi;
-        colats[2*k] = colat - hemi * sep * sin(inc);
-        longs[2*k] = lng + sep * cos(inc);
+        colats[2*k] = colat - hemi * spotsep * sin(inc);
+        longs[2*k] = lng + spotsep * cos(inc);
         
         // trailing spot
         sigs[2*k+1] = sig;
         fluxes[2*k+1] = flux * hemi;
-        colats[2*k+1] = colat + hemi * sep * sin(inc);
-        longs[2*k+1] = lng - sep * cos(inc);
+        colats[2*k+1] = colat + hemi * spotsep * sin(inc);
+        longs[2*k+1] = lng - spotsep * cos(inc);
 
         //printf("size = %.3e | sig = %.3e | flux = %.3e | colat = %.3e | lng = %.3e\n",
         //        size, sig, flux, colat, lng);
     }
 
+    // TODO this gets bad for N >= 20 spots... wow
+    // use Bresenham's line algorithm / midpoint circle algorithm to draw each
+    // level of the circle
     
+    // TODO why does this impl produce diff results from prev? can't just be
+    // the different order that floating pt arithmetic is performed...
+    for ( k = 0 ; k < 2 * N ; k++ ) {
+
+        imin = (int) ((colats[k] - sigs[k] * sin(colats[k])) / dth);
+        imax = (int) ((colats[k] + sigs[k] * sin(colats[k])) / dth);
+        jmin = (int) ((longs[k] - sigs[k]) / dph);
+        jmax = (int) ((longs[k] + sigs[k]) / dph);
+
+        imin = MAX(1, imin);
+        imax = MIN(ntheta - 1, imax);
+        jmin = MAX(0, jmin);
+        jmax = MIN(nphi, jmax);
+        
+        // TODO make polar spots wrap to ph + 180 if it goes over...
+        for ( i = imin ; i < imax ; i++ ) {
+
+            // north polar spot crosses pole
+            /**
+            if ( i > ntheta - 1 ) {
+                ipole = ntheta - 1
+
+            }
+            **/
+            ipole = i;
+
+            th = (i - 0.5) * dth;
+            dS = dth * dph * sin(th) * field_rad * field_rad;
+
+            distth = th - colats[k];
+
+            for ( j = jmin ; j < jmax ; j++ ) {
+
+                // wrap around phi
+                jwrap = j % jmax;
+
+                ph = jwrap * dph;
+
+                // TODO document this and change expr to trunc using bitwise ops
+                distph = 2 * M_PI * ((ph - longs[k]) / 2 / M_PI - floor((ph - longs[k]) / 2 / M_PI + 1. / 2));
+
+                // squared distance
+                dist = (distth * distth + distph * distph) / sigs[k] / sigs[k];
+                if ( dist <= 25 ) {
+                    grid[ipole][jwrap] += fluxes[k] / dS * exp(-dist / 2);
+                }
+            }
+        }
+    }
+
+    /**
     for ( i = 1 ; i < ntheta - 1 ; i++ ) {
         th = (i - 0.5) * dth;
         dS = dth * dph * sin(th) * field_rad * field_rad;
@@ -170,6 +210,7 @@ void schrijver(double **grid, double time) {
             }
         }
     }
+    **/
 }
 
 /**
@@ -190,7 +231,7 @@ void lemerle(double **grid, double time) {
  */
 void naive(double **grid, double time) {
     int i, j, step;
-    double dist, distph, val, th, ph, dth, dph, spot_th, spot_ph, sep;
+    double dist, distph, val, th, ph, dth, dph, spot_th, spot_ph;
 
     step = (int) trunc(time / dt);
     double bmr_freq = fabs(activity);
@@ -200,7 +241,6 @@ void naive(double **grid, double time) {
 
     dth = M_PI / (ntheta - 2);
     dph = 2 * M_PI / (nphi - 1);
-    sep = bmr_sep / field_rad;
 
     for ( i = 1 ; i < ntheta - 1 ; i++ ) {
         th = (i - 0.5) * dth;
@@ -209,34 +249,34 @@ void naive(double **grid, double time) {
             val = 0.0;
 
             // leading spot northern hemisphere
-            spot_th = bmr_th + sep * sin(bmr_i);
-            spot_ph = bmr_ph + sep * cos(bmr_i);
+            spot_th = bmr_th + spotsep * sin(bmr_i);
+            spot_ph = bmr_ph + spotsep * cos(bmr_i);
             distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
             dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
                 val += hale * bmr_b0 * exp(-pow(dist, 2) / 2);
 
-            //printf("bmr: %.2f | spot: %.2f | sep: %.2f | bmr_i %.2f\n", bmr_th, spot_th, sep * sin(bmr_i), bmr_i);
+            //printf("bmr: %.2f | spot: %.2f | sep: %.2f | bmr_i %.2f\n", bmr_th, spot_th, spotsep * sin(bmr_i), bmr_i);
 
             // trailing spot northern hemisphere
-            spot_th = bmr_th - sep * sin(bmr_i);
-            spot_ph = bmr_ph - sep * cos(bmr_i);
+            spot_th = bmr_th - spotsep * sin(bmr_i);
+            spot_ph = bmr_ph - spotsep * cos(bmr_i);
             distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
             dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
                 val -= hale * bmr_b0 * exp(-pow(dist, 2) / 2);
 
             // leading spot southern hemisphere
-            spot_th = M_PI - bmr_th - sep * sin(bmr_i);
-            spot_ph = bmr_ph + sep * cos(bmr_i);
+            spot_th = M_PI - bmr_th - spotsep * sin(bmr_i);
+            spot_ph = bmr_ph + spotsep * cos(bmr_i);
             distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
             dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )
                 val -= hale * bmr_b0 * exp(-pow(dist, 2) / 2);
 
             // trailing spot southern hemisphere
-            spot_th = M_PI - bmr_th + sep * sin(bmr_i);
-            spot_ph = bmr_ph - sep * cos(bmr_i);
+            spot_th = M_PI - bmr_th + spotsep * sin(bmr_i);
+            spot_ph = bmr_ph - spotsep * cos(bmr_i);
             distph = 2 * M_PI * ((ph - spot_ph) / 2 / M_PI - floor((ph - spot_ph) / 2 / M_PI + 1. / 2));
             dist = sqrt(pow(th - spot_th, 2) + pow(distph, 2)) / bmr_sigma;
             if ( dist < 5 )

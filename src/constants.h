@@ -59,6 +59,7 @@ extern const double flow_n;
 
 extern const double theta_avg;      // empirically observed mean emergence colat
 extern const double inc_avg;        // empirically observed mean inc of bmr
+extern const double spotsep;        // minimum separation between spots in cm
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
 extern double activity;             // activity set by user?
@@ -78,7 +79,6 @@ extern const double avgfluxd;       // avg flux density (field) in G
 // SIZE
 extern const double smax;           // in cm^2
 extern const double smin;           // in cm^2
-extern double rangefactor;
 // COLATITUDE
 extern const double th0;
 extern const double th1;
@@ -96,7 +96,6 @@ extern const double bmr_sigma;      // spread of BMR
 extern const double bmr_th;
 extern const double bmr_ph;
 extern const double bmr_i;
-extern const double bmr_sep;
 
 ////////////////////////////////////////////////////////////////////////////////
 

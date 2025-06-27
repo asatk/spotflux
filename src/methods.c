@@ -33,6 +33,10 @@ static double *b4;
 static double *b5;
 static double *rp;
 
+
+// TODO !!!!! convert eqns to use sin latitude instead of latitude
+// document equations in both theta and cos theta forms
+
 void init_ftcs(double *flow, double *grad, double *difr) {
 
     int i, j;
