@@ -3,8 +3,7 @@
  * transport model.
  */
 
-#include "math.h"
-//#define PI 3.1415926535897932384626433
+#define PI 3.14159265358979323846
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -17,8 +16,8 @@ double dt = 3e3;
 const int freq = 20;
 const char *fname = "bfld.dat";
 
-const double dth = M_PI / (ntheta - 2);
-const double dph = 2 * M_PI / (nphi - 1);
+const double dth = PI / (ntheta - 2);
+const double dph = 2 * PI / (nphi - 1);
 
 // UPDATE
 double alpha = 1.0;
@@ -56,8 +55,8 @@ const double flow_n = 1;
 
 /** BIPOLAR MAGNETIC REGION **/
 
-const double theta_avg = (90 - 17.5) / 180 * M_PI;
-const double inc_avg = 4.2 / 180 * M_PI;
+const double theta_avg = (90 - 17.5) / 180 * PI;
+const double inc_avg = 4.2 / 180 * PI;
 const double spotsep = 1.8e9 / field_rad / 2;
 
 //// SCHRIJVER+ 01 EMPIRICAL CYCLE
@@ -67,8 +66,8 @@ const double p_eph = 2.9;
 const double A0 = 1.0;
 const double beta = 1.0;
 const double tcycle = 11 * 3.15e7;
-const double a0 = 8.0 / 86400 * 180 * 180 / M_PI / M_PI;
-const double a1 = 8.0 / 86400 * 180 * 180 / M_PI / M_PI;
+const double a0 = 8.0 / 86400 * 180 * 180 / PI / PI;
+const double a1 = 8.0 / 86400 * 180 * 180 / PI / PI;
 
 //// SCHRIJVER+ 01 EMPIRICAL EMERGENCE
 // FLUX
@@ -79,21 +78,21 @@ const double avgfluxd = 180;
 const double smax = fluxmax / avgfluxd;
 const double smin = fluxmin / avgfluxd;
 // COLATITUDE
-const double th0 = 25 / 180 * M_PI;
-const double th1 = 4 / 180 * M_PI;
+const double th0 = 25 / 180 * PI;
+const double th1 = 4 / 180 * PI;
 const double mu_th = theta_avg;
 const double flux_th = 5e20;
 // INCLINATION
-const double i0 = M_PI / 2;
-const double i1 = M_PI / 10;
+const double i0 = PI / 2;
+const double i1 = PI / 10;
 const double mu_i = inc_avg;
 const double flux_i = 8e19;
 
 //// NAIVE EMERGENCE
 const double bmr_b0 = 100.0;
-const double bmr_sigma = 4. / 180 * M_PI;
+const double bmr_sigma = 4. / 180 * PI;
 const double bmr_th = theta_avg;
-const double bmr_ph = M_PI;
+const double bmr_ph = PI;
 const double bmr_i = inc_avg;
 
 ////////////////////////////////////////////////////////////////////////////////
