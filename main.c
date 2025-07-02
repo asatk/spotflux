@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
     printf("Simulation initialized.\n");
     // evolve surface magnetic field over time
     time = 0;
+    // TODO add timing to simulation
     for ( t = 0 ; t < nt ; t++ ) {
 
         // inject active region

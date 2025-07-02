@@ -42,7 +42,7 @@ double randnorm(double mu, double sig) {
         u = ranq1dbl();
         v = 1.7156 * (ranq1dbl() - 0.5);
         x = u - 0.449871;
-        y = abs(v) + 0.386595;
+        y = fabs(v) + 0.386595;
         q = sqrt(x) + y * (0.19600 * y - 0.25472 * x);
     } while ( q > 0.27597 &&
             (q > 0.27846 || sqrt(v) > -4 * log(u) * sqrt(u)));
