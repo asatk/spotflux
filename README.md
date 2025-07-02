@@ -29,10 +29,18 @@ A 2D map of the surface magnetic field is saved every `freq` timesteps to file
 ### Generate Plots
 ```python plot.py```
 
-Python will read in the raw data file `bfld.dat` produced by `main`. For the
-moment, the python script does not read run parameters from the configuration
-file. This behavior will be updated soon; for now, input manually the number of
-timesteps, frequency of saving, and data file name in the beginning of the
-python script. The last line of the script will save a .gif file of all the
+Python will read in the raw data file `bfld.dat` produced by `main`. It will
+also read in the parameter set given in a config file which is by default
+`config.c`. The config file identified at the beginning of `plot.py` as `cfname`
+should correspond to the data file you are analyzing.
+
+Note: the last line of the script will save a .gif file of all the
 frames. You can change the name or comment this line out as it takes some time
 to render the .gif image especially if there are a lot of frames.
+
+### Analysis
+```script.py```
+
+A basic Python script is provided for users to quickly grasp how the data are
+formatted and read in to a Python application. This is a barebones script from
+which more meaningful analyses can build off.
