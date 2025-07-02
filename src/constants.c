@@ -23,7 +23,7 @@ const double dph = 2 * PI / (nphi - 1);
 double alpha = 1.0;
 
 // RANDOM
-const unsigned long long seed = 0x2025LL;
+const unsigned long long seed = 0x2025;
 
 ////////////////////////////////////////////////////////////////////////////////
 

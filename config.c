@@ -11,9 +11,9 @@
 
 const int ntheta = 128;
 const int nphi = 256;
-int nt = 2001;
+int nt = 20001;
 double dt = 3e3;
-const int freq = 20;
+const int freq = 1000;
 const char *fname = "bfld.dat";
 
 const double dth = PI / (ntheta - 2);
@@ -23,7 +23,7 @@ const double dph = 2 * PI / (nphi - 1);
 double alpha = 1.0;
 
 // RANDOM
-const unsigned long long seed = 0x2025LL;
+const unsigned long long seed = 0x2025;
 
 ////////////////////////////////////////////////////////////////////////////////
 

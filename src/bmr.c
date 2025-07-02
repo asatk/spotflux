@@ -85,7 +85,7 @@ void set_activity(double act) {
  */
 void schrijver(double **grid, double time) {
     
-    int i, ipole, imin, imax, j, jwrap, jmin, jmax, k, N;
+    int i, ipole, imin, imax, j, jwrap, jmin, jmax, k, N, pol;
     double n, A, th, ph, u, v, size, flux, hemi, colat, lng, inc, dist, distth, distph, sig, dS, omega;
 
     // sample flux from power law
@@ -105,6 +105,12 @@ void schrijver(double **grid, double time) {
         return;
     }
 
+    // polarity given the time thru cycle -- empirically observed cycle time
+    // for now. can try to engineer smth where it reverses by itself?
+    // TODO check order of ops to see if can remove parens
+    pol = (((int) (time / tcycle)) % 2) * 2 - 1;
+
+
     // TODO pre-initialize a bunch of spots in a grid and either sample or index
     // them with a total count. if not sampling but just making, create new once
     // you hit the size of the thing.
@@ -113,7 +119,7 @@ void schrijver(double **grid, double time) {
         //size = sample_size_bmr();
         size = sample_size_bmr();
         omega = size / field_rad / field_rad;   // solid angle in rad^2
-        flux = size * avgfluxd; // TODO check if flux should be divided by R^2
+        flux = pol * size * avgfluxd; // TODO check if flux should be divided by R^2
         hemi = sample_hemi();
         colat = sample_th(flux);
         if ( hemi < 0.0 ) colat = M_PI - colat;

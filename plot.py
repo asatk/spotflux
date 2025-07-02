@@ -1,37 +1,55 @@
+"""
+plot.py
+
+Plots simulation data in both a static plot and animation to observe the surface
+field evolve.
+
+2025.05.01
+Anthony Atkinson
+"""
+
 import numpy as np
 from numpy import ma
 from matplotlib import pyplot as plt
 import matplotlib.animation as anim
 
-ntheta = 128
-nphi = 256
+from parse_config import parse_config
 
-nt = 2001
-dt = 3e3 / 86400    # days
-freq = 20     # steps
+# very small number
+eps = 1e-10
 
-field_rad = 6.957e10
-field_b0 = 8.5
-bmr_b0 = 10.0
-bmr_th = (90 - 17.5) / 180 * np.pi
+# config file location
+cfname = "config.c"
+# read config file for params
+params = parse_config(cfname, debug=1)
+
+# get params from config file
+fname = params.fname
+ntheta = params.ntheta
+nphi = params.nphi
+dth = params.dth
+dph = params.dph
+nt = params.nt
+dt = params.dt
+freq = params.freq
+
+# number of frames saved
+nframes = (nt - 1) // freq + 1
+
+field_rad = params.field_rad
+field_b0 = params.field_b0
+bmr_b0 = params.bmr_b0
+bmr_th = params.bmr_th
 bmr_loc = bmr_th / np.pi * ntheta
 
-fname = "bfld.dat"
 data = np.loadtxt(fname)
-a = data.reshape(-1, ntheta, nphi)
+a = data.reshape(nframes, ntheta, nphi)
 
-dth = np.pi / (ntheta - 2)
-theta = np.linspace(-dth, np.pi+dth+1e-14, num=ntheta, endpoint=True)
+theta = np.linspace(-dth, np.pi+dth+eps, num=ntheta, endpoint=True)
 theta = theta.reshape(1, ntheta, 1)
-dphi = 2 * np.pi / (nphi - 1)
 phi = np.linspace(0, 2 * np.pi + 1e-14, num=nphi, endpoint=True)
-dS = dth * dphi * np.abs(np.sin(theta))
-field_flux0 = field_b0 * dphi * dth
-field_flux0 = field_b0 * dphi * dth * np.sin(dth)
 
-#a = dS * a
-
-nframes = a.shape[0]
+# interval between animation frames
 ms = 100
 
 a_longavg = ma.array(np.mean(a, axis=2))
