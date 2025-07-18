@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
             store(grid, f);
         }
 
-        update(grid, newgrid, flow, grad, difr);
+        update(grid, newgrid);
         tempgrid = newgrid;
         newgrid = grid;
         grid = tempgrid;

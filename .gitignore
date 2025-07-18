@@ -1,0 +1,7 @@
+*.dat
+*.gif
+*.png
+main
+**/__pycache__/
+/imgs
+/frames

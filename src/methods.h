@@ -1,9 +1,7 @@
-typedef void(*method_t)(double **, double **, double *, double *, double *);
+typedef void(*method_t)(double **, double **); 
 
-void ftcs(double **grid, double **newgrid,
-        double *flow, double *grad, double *difr);
-void ftcs_tri(double **grid, double **newgrid,
-        double *flow, double *grad, double *difr);
+void ftcs(double **grid, double **newgrid);
+void ftcs_tri(double **grid, double **newgrid);
 
 void init_ftcs(double *flow, double *grad, double *difr);
 

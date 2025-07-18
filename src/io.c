@@ -6,7 +6,8 @@
 
 void parseargs(int argc, char **argv) {
 
-    
+    (void) argc;
+    (void) argv;
 
 }
 

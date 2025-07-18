@@ -84,7 +84,7 @@ ax2.set_xticklabels(["0", r"$\pi/2$", r"$\pi$", r"$3\pi/2$", r"$2\pi$"])
 ax2.set_yticks([0, ntheta/2, ntheta-1])
 ax2.set_yticklabels(["0", r"$\pi/2$", r"$\pi$"])
 ax2.set_ylabel(r"Colatitude $\theta$")
-ax2.set_title(f"Final State ({dt * (nt - 1) :.1f} d)")
+ax2.set_title(f"Final State ({dt * (nt - 1) / 86400:.1f} d)")
 
 imlong = ax1l.imshow(a_longavg.T, vmin=-field_b0, vmax=field_b0, norm="symlog")
 cb3 = plt.colorbar(imlong, shrink=1.0, orientation="horizontal")
@@ -141,11 +141,11 @@ axlmap.set_yticks([0, ntheta/2, ntheta-1])
 axlmap.set_yticklabels(["0", r"$\pi/2$", r"$\pi$"])
 axlmap.set_title("Longitudinally-Averaged\nSurface Field over Time")
 
-times = np.linspace(0, (nt - 1) * dt, nframes, endpoint=True)
+times = np.linspace(0, (nt - 1) * dt / 86400, nframes, endpoint=True)
 fluxd = np.sum(a, axis=(1,2))
 linetotal = axtotal.plot(0, fluxd[0])[0]
 
-axtotal.set_xlim(xmin=0, xmax=(nt - 1) * dt)
+axtotal.set_xlim(xmin=0, xmax=(nt - 1) * dt / 86400)
 axtotal.set_xlabel("Time (d)")
 axtotal.set_ylim(ymin=np.nanmin(fluxd), ymax=np.nanmax(fluxd))
 axtotal.set_ylabel("Magnetic Field (G)")
@@ -169,7 +169,7 @@ def update(t):
     a_longavg.mask[:t+1] = ma.nomask
     imlong.set_array(a_longavg.T)
     
-    figtitle.set_text(f"Surface field evolution step {t} ({dt * t * freq:.1f} d)")
+    figtitle.set_text(f"Surface field evolution step {t} ({dt * t / 86400:.1f} d)")
     
     linetotal.set_xdata(times[:t])
     linetotal.set_ydata(fluxd[:t])

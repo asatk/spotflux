@@ -126,8 +126,7 @@ void init_ftcs(double *flow, double *grad, double *difr) {
     }
 }
 
-void ftcs(double **grid, double **newgrid,
-        double *flow, double *grad, double *difr) {
+void ftcs(double **grid, double **newgrid) {
 
     int i, j;
     double val, c1, c2, c3, c4, c5;
@@ -160,8 +159,7 @@ void ftcs(double **grid, double **newgrid,
     }
 }
 
-void ftcs_tri(double **grid, double **newgrid,
-        double *flow, double *grad, double *difr) {
+void ftcs_tri(double **grid, double **newgrid) {
 
     int i, j;
 

@@ -294,4 +294,7 @@ void naive(double **grid, double time) {
     }
 }
 
-void none(double **grid, double time) {}
+void none(double **grid, double time) {
+    (void) grid;
+    (void) time;
+}
