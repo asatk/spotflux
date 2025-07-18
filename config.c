@@ -11,7 +11,7 @@
 
 const int ntheta = 128;
 const int nphi = 256;
-int nt = 20001;
+int nt = 200001;
 double dt = 3e3;
 const int freq = 1000;
 const char *fname = "bfld.dat";
